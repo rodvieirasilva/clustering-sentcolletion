@@ -59,14 +59,18 @@ def main():
     tweets = [item['tweet'] for item in complete]    
     #wordCloud(' '.join(tweets)) --> Juntar as palavras no gráfico wordcloud
 
-    allwords = set()
+    uniquewords = set()
+    allwords = []
     for tweet in tweets:
         tweet = tweet.split()
         for word in tweet:
-            allwords.add(word)       
-    allwords = list(allwords)
+            allwords.append(word)  
+            uniquewords.add(word)     
+    uniquewords = list(uniquewords)
     stats("allwords", allwords)
     save('allwords.json', allwords)
+    stats("uniquewords", uniquewords)
+    save('uniquewords.json', uniquewords)
     
     #print(tweets)
     
@@ -76,11 +80,11 @@ def main():
     save('sklearn_stoplist.json', list(vectorizer.get_stop_words()))   
 
     sklearn_bagofwords = vectorizer.fit_transform(tweets).todense()
-    save('sklearn_bagofwords.json', sklearn_bagofwords.tolist())
+    #save('sklearn_bagofwords.json', sklearn_bagofwords.tolist())
     featuresnames = list(vectorizer.get_feature_names())
     save('sklearn_featuresnames.json', featuresnames)
     print('sklearn_featuresnames, size: {}'.format(len(featuresnames)))
-    #save ('sklearn_vocabulary_.json', vectorizer.vocabulary_) #--> Exibe o vocabulario extraido pela função fit_transform()
+    save('sklearn_vocabulary.json', vectorizer.vocabulary_) #--> Exibe o vocabulario extraido pela função fit_transform()
     
     """Teste inicial de conversão
     corpus = ['UNC played Duke in basketball', 'Duke lost the basketball game']
