@@ -20,7 +20,13 @@ class ZipfCurve:
         values.sort(reverse=True)        
         values = [[i,item] for i, item in enumerate(values)]
         plt.plot([row[0] for row in values], [row[1] for row in values])
+        plt.ylabel('Frequência do Termo')
+        plt.xlabel('Termos')
+        plt.title('Curva de Zipf')
+        plt.xticks([])
+        plt.savefig('zipfcurve.png')
         plt.show()
+        
 
     def lunh(self, percent):        
         size = len(self.sorted_frequency)

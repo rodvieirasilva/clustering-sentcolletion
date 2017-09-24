@@ -1,7 +1,7 @@
 import csv
 import json
 import numpy as np
-#from wordcloud import WordCloud --> Módulo wordcloud
+#from wordcloud import WordCloud #--> Módulo wordcloud
 import matplotlib.pyplot as plt
 from sklearn.feature_extraction.text import CountVectorizer #--> Classe utilizada para converter o array de strings em um array de binários
 
@@ -26,7 +26,7 @@ def stats(name, data):
 
 def wordCloud(text):
     # Generate a word cloud image
-    wordcloud = WordCloud(width=1024, height=768, background_color="white").generate(text)
+    wordcloud = WordCloud(width=1024, height=768, background_color="white", stopwords=[]).generate(text)
 
     wordcloud.to_file('cloudword.png')
     # Display the generated image:
@@ -57,7 +57,7 @@ def main():
     save('complete.json', complete)
     
     tweets = [item['tweet'] for item in complete]    
-    #wordCloud(' '.join(tweets)) --> Juntar as palavras no gráfico wordcloud
+    #wordCloud(' '.join(tweets)) #--> Juntar as palavras no gráfico wordcloud
 
     uniquewords = set()
     allwords = []
@@ -84,7 +84,7 @@ def main():
     featuresnames = list(vectorizer.get_feature_names())
     save('sklearn_featuresnames.json', featuresnames)
     print('sklearn_featuresnames, size: {}'.format(len(featuresnames)))
-    save('sklearn_vocabulary.json', vectorizer.vocabulary_) #--> Exibe o vocabulario extraido pela função fit_transform()
+    #save('sklearn_vocabulary.json', vectorizer.vocabulary_) #--> Exibe o vocabulario extraido pela função fit_transform()
     
     """Teste inicial de conversão
     corpus = ['UNC played Duke in basketball', 'Duke lost the basketball game']
