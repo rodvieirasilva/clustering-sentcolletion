@@ -1,5 +1,6 @@
 import csv
 import json
+from textdict import TextDict
 import numpy as np
 #from wordcloud import WordCloud #--> Módulo wordcloud
 import matplotlib.pyplot as plt
@@ -40,6 +41,41 @@ def wordCloud(text):
     # plt.axis("off")
     plt.show()    
 
+def process(data):
+    matrix = [item.split(' ') for item in data]
+    dictEnglish = TextDict('englishDict.txt')
+    dictEmoticons = TextDict('emoticons.txt')
+    stopWords = TextDict('stopwords.txt')
+    dictLingo = TextDict('lingo.txt')
+    separateLetter = "$_-();,.:{}?[]#!@\'\"/"
+    replaced = True
+    while(replaced):
+        replaced = False
+        for row in matrix:
+            for i, word in enumerate(row):
+                word = word.strip().lower()
+                row[i] = word
+                if dictEmoticons.contains(word):
+                    pass
+                elif stopWords.contains(word):
+                    row[i] = ''  
+                elif dictLingo.contains(word):
+                    row[i] = dictLingo.translate(word)
+                else:
+                    for c in separateLetter:
+                        word = word.replace(c, ' ')                        
+                    if row[i] != word:
+                        replaced = True
+                        row[i] = ''
+                        row.extend(word.split(' '))
+                        
+            
+    for row in matrix:
+        for i, word in enumerate(row):
+            if dictEnglish.contains(word):
+                row[i] = dictEnglish.translate(word)
+    return [' '.join(row).strip().replace("  ", " ") for row in matrix]
+
 def main():
     print('Started')
     archeage = readCSV("SentCollection - ARCHEAGE.csv", "game", "archeage")
@@ -56,9 +92,11 @@ def main():
     stats("complete", complete)
     save('complete.json', complete)
     
-    tweets = [item['tweet'] for item in complete]    
+    tweets = [item['tweet'] for item in complete]  
+    processed = process(tweets)  
+    save('processed.json', processed)
     #wordCloud(' '.join(tweets)) #--> Juntar as palavras no gráfico wordcloud
-
+    save('tweets.json', tweets)
     uniquewords = set()
     allwords = []
     for tweet in tweets:
