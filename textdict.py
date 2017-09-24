@@ -4,7 +4,7 @@ class TextDict:
         with open(filename) as file:
             for line in file:
                 splitline = line.split('\t')
-                self.dict[splitline[0]] = splitline[-1].strip()
+                self.dict[splitline[0].strip()] = splitline[-1].strip()
     def contains(self, word):
         lowered_word = word.lower()
         return lowered_word in self.dict
