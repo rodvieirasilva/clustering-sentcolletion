@@ -1,7 +1,6 @@
 import csv
 import json
 from textdict import TextDict
-from textdict import TextDict
 import numpy as np
 import re
 
