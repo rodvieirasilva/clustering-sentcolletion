@@ -49,14 +49,20 @@ def process(data):
     dictLingo = TextDict('lingo.txt')
     separateLetter = "$_-();,.:{}?[]#!@\'\"/"
     replaced = True
+
+    # Identificação de Termos
     while(replaced):
         replaced = False
         for row in matrix:
             for i, word in enumerate(row):
                 word = word.strip().lower()
                 row[i] = word
+
+                # Verificando se há emoticons
                 if dictEmoticons.contains(word):
                     pass
+
+                # Verificando se há Girias e Abreviaturas
                 elif dictLingo.contains(word):
                     row[i] = dictLingo.translate(word)
                 else:
@@ -66,16 +72,24 @@ def process(data):
                         replaced = True
                         row[i] = ''
                         row.extend(word.split(' '))
-                        
+
+    TermosIdentificados = [' '.join([item for item in row if item]).strip().replace(" ", " ") for row in matrix]
+
+    # Refazendo a matrix de palavras para conseguir remover StopWords e realizar Normalização Morfológica nos termos transformados
+    matrix = [item.split(' ') for item in TermosIdentificados]
+                
+    # Remoção de StopWords        
     for row in matrix:
         for i, word in enumerate(row):
             if dictStopWords.contains(word):
                 row[i] = ''
                         
+    # Normalização Morfológica
     for row in matrix:
         for i, word in enumerate(row):
             if dictEnglish.contains(word):
                 row[i] = dictEnglish.translate(word)
+
     return [' '.join([item for item in row if item]).strip().replace(" ", " ") for row in matrix]
 
 def main():
