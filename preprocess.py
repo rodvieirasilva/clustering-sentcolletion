@@ -109,10 +109,13 @@ def main():
     save('complete.json', complete)
     
     tweets = [item['tweet'] for item in complete]  
+    save('tweets.json', tweets)
+
     processed = process(tweets)  
     save('processed.json', processed)
     #wordCloud(' '.join(tweets)) #--> Juntar as palavras no gráfico wordcloud
-    save('tweets.json', tweets)
+    
+    # Contabilizando as palavras unicas das mensagens sem processamento
     uniquewords = set()
     allwords = []
     for tweet in tweets:
@@ -125,9 +128,21 @@ def main():
     save('allwords.json', allwords)
     stats("uniquewords", uniquewords)
     save('uniquewords.json', uniquewords)
-    
-    #print(tweets)
-    
+
+    # Contabilizando as palavras unicas das mensagens com processamento
+    uniquewords = set()
+    allwords = []
+    for tweet in processed:
+        tweet = tweet.split()
+        for word in tweet:
+            allwords.append(word)
+            uniquewords.add(word)
+    uniquewords = list(uniquewords)
+    stats("allwordsProcessed", allwords)
+    save('allwordsProcessed.json', allwords)
+    stats("uniquewordsProcessed", uniquewords)
+    save('uniquewordsProcessed.json', uniquewords)
+        
     #Utilizando o CountVectorizer para criar a bag-of-words
     vectorizer = CountVectorizer(stop_words='english') #--> Inicializa a função CountVectorizer passando o parâmetro de extração de stop_words (Em inglês)
 
