@@ -45,7 +45,7 @@ def process(data):
     matrix = [item.split(' ') for item in data]
     dictEnglish = TextDict('englishDict.txt')
     dictEmoticons = TextDict('emoticons.txt')
-    stopWords = TextDict('stopwords.txt')
+    dictStopWords = TextDict('stopwords.txt')
     dictLingo = TextDict('lingo.txt')
     separateLetter = "$_-();,.:{}?[]#!@\'\"/"
     replaced = True
@@ -57,8 +57,6 @@ def process(data):
                 row[i] = word
                 if dictEmoticons.contains(word):
                     pass
-                elif stopWords.contains(word):
-                    row[i] = ''  
                 elif dictLingo.contains(word):
                     row[i] = dictLingo.translate(word)
                 else:
@@ -69,12 +67,16 @@ def process(data):
                         row[i] = ''
                         row.extend(word.split(' '))
                         
-            
+    for row in matrix:
+        for i, word in enumerate(row):
+            if dictStopWords.contains(word):
+                row[i] = ''
+                        
     for row in matrix:
         for i, word in enumerate(row):
             if dictEnglish.contains(word):
                 row[i] = dictEnglish.translate(word)
-    return [' '.join(row).strip().replace("  ", " ") for row in matrix]
+    return [' '.join([item for item in row if item]).strip().replace(" ", " ") for row in matrix]
 
 def main():
     print('Started')
