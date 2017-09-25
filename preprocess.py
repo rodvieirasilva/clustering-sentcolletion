@@ -1,7 +1,10 @@
 import csv
 import json
 from textdict import TextDict
+from textdict import TextDict
 import numpy as np
+import re
+
 #from wordcloud import WordCloud #--> Módulo wordcloud
 import matplotlib.pyplot as plt
 from sklearn.feature_extraction.text import CountVectorizer #--> Classe utilizada para converter o array de strings em um array de binários
@@ -42,6 +45,7 @@ def wordCloud(text):
     plt.show()    
 
 def process(data):
+    s = "Example String"    
     matrix = [item.split(' ') for item in data]
     dictEnglish = TextDict('englishDict.txt')
     dictEmoticons = TextDict('emoticons.txt')
@@ -56,7 +60,9 @@ def process(data):
         for row in matrix:
             for i, word in enumerate(row):
                 word = word.strip().lower()
-                row[i] = word
+                word = word.strip().lower()
+                word = re.sub('http://[^\\s]*', '', word)
+                row[i] = word                
 
                 # Verificando se há emoticons
                 if dictEmoticons.contains(word):

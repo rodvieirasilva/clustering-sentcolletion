@@ -37,13 +37,13 @@ class ZipfCurve:
     
     def uniques(self):              
         result = [value for key,value in self.frequency.items() if value == 1]
-        print(result)
+        #print(result)
         print('Size: {}'.format(len(result)))
         return result
             
 
 def main():
-    with open('allwords.json') as json_data:
+    with open('allwordsProcessed.json') as json_data:
         allwords = json.load(json_data)
         zipf = ZipfCurve(allwords)
         zipf.lunh(0.1)
