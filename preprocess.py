@@ -45,7 +45,9 @@ def wordCloud(text):
 
 def process(data):
     s = "Example String"    
-    matrix = [item.split(' ') for item in data]
+    s1 = "teste\teste\teste"    
+    matrix1 = s1.replace('\t', ' \t').split(' ')
+    matrix = [item.replace('\t', ' \t').split(' ') for item in data]
     dictEnglish = TextDict('englishDict.txt')
     dictEmoticons = TextDict('emoticons.txt')
     dictStopWords = TextDict('stopwords.txt')
@@ -61,6 +63,7 @@ def process(data):
                 word = word.strip().lower()
                 word = word.strip().lower()
                 word = re.sub('http://[^\\s]*', '', word)
+                word = re.sub('https://[^\\s]*', '', word)
                 row[i] = word                
 
                 # Verificando se há emoticons
@@ -72,7 +75,7 @@ def process(data):
                     row[i] = dictLingo.translate(word)
                 else:
                     for c in separateLetter:
-                        word = word.replace(c, ' ')                        
+                        word = word.replace(c, ' ')
                     if row[i] != word:
                         replaced = True
                         row[i] = ''
