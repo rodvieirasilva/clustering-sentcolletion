@@ -121,6 +121,7 @@ def main():
 
     processed = process(tweets)  
     save('processed.json', processed)
+    save('processed_Database.txt', processed)
     #wordCloud(' '.join(tweets)) #--> Juntar as palavras no gráfico wordcloud
     
     # Contabilizando as palavras unicas das mensagens sem processamento
@@ -153,25 +154,22 @@ def main():
         
     #Utilizando o CountVectorizer para criar a bag-of-words
     vectorizer = CountVectorizer(stop_words='english') #--> Inicializa a função CountVectorizer passando o parâmetro de extração de stop_words (Em inglês)
-
     save('sklearn_stoplist.json', list(vectorizer.get_stop_words()))   
 
-    sklearn_bagofwords = vectorizer.fit_transform(tweets).todense()
-    #save('sklearn_bagofwords.json', sklearn_bagofwords.tolist())
-    featuresnames = list(vectorizer.get_feature_names())
-    save('sklearn_featuresnames.json', featuresnames)
-    print('sklearn_featuresnames, size: {}'.format(len(featuresnames)))
+    sklearn_bagOfWords = vectorizer.fit_transform(processed).todense()
+    #save('sklearn_bagofwords.json', sklearn_bagOfWords.tolist())
+    
+    featuresNames = list(vectorizer.vocabulary_)
+    save('sklearn_featuresnames.json', featuresNames)
+    
+    #print ('\n', sklearn_bagOfWords)
+    #print ('\n', featuresNames)
+    print('\nsklearn_featuresnames, size: {}'.format(len(featuresNames)))
     #save('sklearn_vocabulary.json', vectorizer.vocabulary_) #--> Exibe o vocabulario extraido pela função fit_transform()
     
-    """Teste inicial de conversão
-    corpus = ['UNC played Duke in basketball', 'Duke lost the basketball game']
-
-    vectorizer = CountVectorizer()
-    print (vectorizer.fit_transform(corpus).todense())
-    print (vectorizer.vocabulary_)"""
     
 
-    print('Finished')
+    print('\nFinished')
 
 if __name__ == '__main__':
     main()          
