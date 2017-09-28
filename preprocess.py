@@ -100,6 +100,18 @@ def process(data):
 
     return [' '.join([item for item in row if item]).strip().replace(" ", " ") for row in matrix]
 
+def savecsv(filename, header, data):
+    with open(filename, 'w', encoding='utf-8') as file:
+        for cell in header:
+            file.write('"{}"'.format(cell))
+            file.write(';')
+        file.write('\n')
+        for row in data:
+            for cell in row:
+                file.write(str(cell))
+                file.write(';')
+            file.write('\n')
+
 def main():
     print('Started')
     archeage = readCSV("SentCollection - ARCHEAGE.csv", "game", "archeage")
@@ -167,6 +179,7 @@ def main():
     print('\nsklearn_featuresnames, size: {}'.format(len(featuresNames)))
     #save('sklearn_vocabulary.json', vectorizer.vocabulary_) #--> Exibe o vocabulario extraido pela função fit_transform()
     
+    savecsv('sklearn_bagofwords.csv', featuresNames, sklearn_bagOfWords.tolist())
     
 
     print('\nFinished')
