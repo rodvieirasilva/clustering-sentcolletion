@@ -153,7 +153,7 @@ def main():
     save('uniquewordsProcessed.json', uniquewords)
         
     #Utilizando o CountVectorizer para criar a bag-of-words
-    vectorizer = CountVectorizer(stop_words=[], binary=True) #--> Inicializa a função CountVectorizer passando o parâmetro de extração de stop_words (Em inglês)
+    vectorizer = CountVectorizer(stop_words=[], binary=True, vocabulary=uniquewords) #--> Inicializa a função CountVectorizer passando o parâmetro de extração de stop_words (Em inglês)
     #save('sklearn_stoplist.json', list(vectorizer.get_stop_words()))   
 
     sklearn_bagOfWords = vectorizer.fit_transform(processed).todense()
