@@ -13,17 +13,21 @@ class ZipfCurve:
             count = self.frequency.get(word,0)
             self.frequency[word] = count + 1
         self.sorted_frequency = sorted(self.frequency.items(), key=lambda x:x[1], reverse=True)
+        
 
     def plot(self):
         i=0
         values = list(self.frequency.values())
-        values.sort(reverse=True)        
+        values.sort(reverse=True)
+        values = values[0:999]
         values = [[i,item] for i, item in enumerate(values)]
         plt.plot([row[0] for row in values], [row[1] for row in values])
         plt.ylabel('Frequência do Termo')
         plt.xlabel('Termos')
         plt.title('Curva de Zipf')
         plt.xticks([])
+        plt.axis([0, 999, 0, 100])
+        plt.yticks([1,2,3,4,5,6,7,100])
         plt.savefig('zipfcurve.png')
         plt.show()
         

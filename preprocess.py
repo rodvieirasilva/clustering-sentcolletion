@@ -41,7 +41,7 @@ def wordCloud(text):
     # plt.figure()
     # plt.imshow(wordcloud, interpolation="bilinear")
     # plt.axis("off")
-    plt.show()    
+    plt.show()
 
 def process(data):
     s = "Example String"    
