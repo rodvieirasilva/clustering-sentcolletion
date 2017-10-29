@@ -32,8 +32,8 @@ class PlotPCA:
         plt.figure(num=title)
         plt.title(title)
         XPCA = self.pca.transform(words)
-        colors = [self.basec[c] for c in y_pred]
-        patches = [mpatches.Patch(color=self.basec[i], label=classn) for i,classn in enumerate(classnames)]
+        colors = [self.basec[ (c % len(self.basec)) ] for c in y_pred]
+        patches = [mpatches.Patch(color=self.basec[ (i % len(self.basec)) ], label=classn) for i,classn in enumerate(classnames)]
         plt.legend(handles=patches)
         plt.scatter(XPCA[:, 0], XPCA[:, 1], s=30, color=colors)        
         plt.legend()
