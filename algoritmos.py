@@ -1,6 +1,7 @@
 import csv
 import json
 from textdict import TextDict
+from pca import PlotPCA
 
 from time import time
 from sklearn import metrics
@@ -30,13 +31,18 @@ def stats(name, data):
     print('size: {}'.format(len(data)))
     print('--------')
 
+def plotpca(title, data, Y):
+    pca = PlotPCA(filename=None, data=data)
+    pca.plotpca(title, data, Y, set(Y))
+    pca.show()
 
 def Kmedia(data, k):
     model = KMeans(n_clusters=k, max_iter=1000)
     model.fit(data)
     labels = 'grupos';
-    savecsv("KMeans\KMeans_k{}.csv".format(k), labels, model.labels_)
-
+    title = "KMeans_k{}.csv".format(k);
+    savecsv("KMeans/"+ title.format(k), labels, model.labels_)
+    plotpca(title, data,  model.labels_)
     return 0
 
 def savecsv(filename, header, data):
@@ -46,7 +52,6 @@ def savecsv(filename, header, data):
             file.write(';')
         file.write('\n')
         for cell in data:
-            #for cell in row:
             file.write(str(cell))
             file.write(';')
             #file.write('\n')
@@ -72,7 +77,7 @@ def main():
 
     # Aplicando o k-medias    
     if opcao == '1':
-        k = input('Informe o NUmero de K ou informe 0 para Executar com varios valores para K: ')
+        k = input('Informe o Número de K ou informe 0 para Executar com varios valores para K: ')
         if k == '0':
             for x in range(1, 10):
                 Kmedia(bagofwords, x)
