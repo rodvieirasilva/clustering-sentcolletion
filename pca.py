@@ -19,7 +19,7 @@ class PlotPCA:
             "#844500",
             "#99b0ff"]
     
-    def __init__(self, filename, data):
+    def __init__(self, filename=None, data=None):
         if(filename != None):
             with open(filename) as json_data:
                 self.bagofwords = json.load(json_data)
@@ -43,9 +43,9 @@ class PlotPCA:
 
 def main():
    
-    pca = PlotPCA("sklearn_bagofwords.json")
+    pca = PlotPCA(filename="basesjson/sklearn_bagofwords.json")
 
-    with open('complete.json') as json_data:
+    with open('basesjson/complete.json') as json_data:
         complete = json.load(json_data)
 
     #{"theme": "game", "product": "archeage", "tweet": "@tweetmee lol atleast i have csgo and archeage to keep me atleast a tad bit busy xp ahah", "class": "1"}

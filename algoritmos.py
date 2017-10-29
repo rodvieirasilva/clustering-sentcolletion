@@ -13,26 +13,8 @@ import re
 import matplotlib.pyplot as plt
 
 
-def save(filename, data):
-    with open(filename, 'w') as outfile:
-            json.dump(data, outfile)
-
-def readCSV(filename, theme, product):
-    result = []
-    with open(filename, 'r', encoding='utf-8') as reader:
-        reader.readline()
-        reader = csv.reader(reader, delimiter = ',', quotechar = '"')        
-        for row in reader:
-            result.append({"theme":theme, "product": product, "tweet": row[0], "class":row[1]})
-    return result
-
-def stats(name, data):
-    print('-- {} --'.format(name))
-    print('size: {}'.format(len(data)))
-    print('--------')
-
 def plotpca(title, data, Y):
-    pca = PlotPCA(filename=None, data=data)
+    pca = PlotPCA(data=data)
     pca.plotpca(title, data, Y, set(Y))
     pca.show()
 
@@ -40,8 +22,8 @@ def Kmedia(data, k):
     print("Gerando a partição com Kmedia e k "+str(k))
     model = KMeans(n_clusters=k, max_iter=1000)
     model.fit(data)
-
-	plotpca(title, data, model.labels_)
+    title = "KMeans_k{}".format(k)
+    plotpca(title, data, model.labels_)
     return model.labels_
 
 def AvaliaSalvaResultado(data, particao, algoritmo, k, processed, complete):
@@ -69,32 +51,20 @@ def savecsvParticao(filename, tweet, processed, labels):
                 file.write(';')
                 file.write('\n')
 
-def savecsv(filename, header, data):
-    with open(filename, 'w', encoding='utf-8') as file:
-        for cell in header:
-            file.write('"{}"'.format(cell))
-            file.write(';')
-        file.write('\n')
-        for row in data:
-            for cell in row:
-                file.write(str(cell))
-                file.write(';')
-            file.write('\n')
-
 def main():
     print('Started')
     print('Carregando as Bases de Dados')
 
     # Base de Dados Completa
-    with open('complete.json') as json_data:
+    with open('basesjson/complete.json') as json_data:
         complete = json.load(json_data)
     
     # Tweets Pré-Processados
-    with open('processed.json') as json_data:
+    with open('basesjson/processed.json') as json_data:
         processed = json.load(json_data)
 
     # Base de Dados Pré-Processada
-    with open('sklearn_bagofwords.json') as json_data:
+    with open('basesjson/sklearn_bagofwords.json') as json_data:
         bagofwords = json.load(json_data)
     
     print('Escolha uma das opções: ')
@@ -107,7 +77,7 @@ def main():
     # Aplicando o k-medias    
     if opcao == '1':
         algoritmo = 'KMeans';
-        k = input('Informe o NUmero de K ou informe 0 para Executar com varios valores para K: ')
+        k = input('Informe o Número de K ou informe 0 para Executar com varios valores para K: ')
         if k == '0':
             for x in range(1, 10):
                 particao = Kmedia(bagofwords, x)
