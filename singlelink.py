@@ -1,25 +1,28 @@
 from scipy.cluster.hierarchy import linkage, fcluster
 
 class SingleLink:
-    singleLinkag = None
+    singleLinkage = None
     labels_ = None
+    distance = None
     k = None
     
-    def __init__(self, k):
+    def __init__(self, distance, k):
         self.k =  k
+        self.distance = distance
 
     def fit(self, data):
-        self.singleLinkag = linkage(data, 'single')        
-        self.labels_ = fcluster(self.singleLinkag, self.k, criterion='maxclust')
+        
+        self.singleLinkage = linkage(self.distance, 'single')        
+        self.labels_ = fcluster(self.singleLinkage, self.k, criterion='maxclust')
 
-# def main():
+def main():
+     pass
 #     Z = linkage(X, 'single')
 #     fig = plt.figure(figsize=(25, 10))
 #     dn = dendrogram(Z)
 #     plt.show()
 
-if __name__ == '__main__':
-    
+if __name__ == '__main__':    
     main()
 
 

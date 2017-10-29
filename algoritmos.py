@@ -12,7 +12,6 @@ from util import mkdir
 from sklearn.metrics.pairwise import pairwise_distances
 from singlelink import SingleLink
 
-#from wordcloud import WordCloud #--> Módulo wordcloud
 import matplotlib.pyplot as plt
 
 def plotpca(pca, algoritmo, title, data, Y):
@@ -26,9 +25,9 @@ def Kmedia(k):
     model.name = "KMeans"
     return model
 
-def singleLink(k):
+def singleLink(distance, k):
     print("Criando Modelo com SingleLink e k="+str(k))
-    model = SingleLink(k=k) 
+    model = SingleLink(distance, k) 
     model.title = "SingleLink_k{}".format(k)
     model.name = "SingleLink"
     return model
@@ -104,17 +103,18 @@ def main():
         if opcao == 1:
             k = inputK()
             if k == 0:
-                for x in range(1, 10):
+                for x in range(2, 10):
                     models.append(Kmedia(x))
             else:
                 models.append(Kmedia(k))
         elif opcao == 2:
             k = inputK()
+            distance = pairwise_distances(bagofwords, Y=None, metric='euclidean', n_jobs=1)
             if k == 0:
-                for x in range(1, 10):
-                    models.append(singleLink(x))
+                for x in range(2, 10):
+                    models.append(singleLink(distance, x))
             else:
-                models.append(singleLink(k))
+                models.append(singleLink(distance, k))
         elif opcao == 5:
             plt.show()
         else:
