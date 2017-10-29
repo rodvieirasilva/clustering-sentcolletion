@@ -17,3 +17,4 @@ def savecsv(filename, header, data):
                 file.write(str(cell))
                 file.write(';')
             file.write('\n')
+

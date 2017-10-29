@@ -2,43 +2,42 @@ import csv
 import json
 from textdict import TextDict
 from pca import PlotPCA
-
+import matplotlib.pyplot as plt
 from time import time
 from sklearn import metrics
 from sklearn.cluster import KMeans
 import numpy as np
-import re
 
 #from wordcloud import WordCloud #--> Módulo wordcloud
 import matplotlib.pyplot as plt
 
-
-def plotpca(title, data, Y):
-    pca = PlotPCA(data=data)
+def plotpca(pca, algoritmo, title, data, Y):
     pca.plotpca(title, data, Y, set(Y))
-    pca.show()
+    pca.savefig("{0}/{1}.png".format(algoritmo, title))
 
-def Kmedia(data, k):
-    print("Gerando a partição com Kmedia e k "+str(k))
-    model = KMeans(n_clusters=k, max_iter=1000)
+def Kmedia(k):
+    print("Criando Modelo com Kmedia e k "+str(k))
+    model = KMeans(n_clusters=k, max_iter=1000)    
+    model.title = "KMeans_k{}".format(k)
+    model.name = "KMeans"
+    return model
+
+def AvaliaSalvaResultado(data, model, processed, complete, pca=None):
+    print("Avaliando a partição encontrada: " + model.title)
     model.fit(data)
-    title = "KMeans_k{}".format(k)
-    plotpca(title, data, model.labels_)
-    return model.labels_
-
-def AvaliaSalvaResultado(data, particao, algoritmo, k, processed, complete):
-    print("Avaliando a partição encontrada")
     tweets = [item['tweet'] for item in complete]  
     theme = [item['theme'] for item in complete]  
     classe = [item['class'] for item in complete]  
-
-    savecsvParticao("{0}\{0}_k{1}.csv".format(algoritmo, k), tweets, processed, particao)
+    algoritmo = model.name
+    particao = model.labels_
+    savecsvParticao("{0}\{1}.csv".format(model.name, model.title), tweets, processed, particao)
     print("Indice Rand ajustado com relação a Classe "+str(metrics.adjusted_rand_score(classe, particao)))
     print("Indice Rand ajustado com relação ao Tema "+str(metrics.adjusted_rand_score(theme, particao)))
     
     print("Indice Silhueta com relação a base inicial "+str(metrics.silhouette_score(data, particao)))
 
-    return 0
+    if(pca != None):
+        plotpca(pca, algoritmo, model.title, data, particao)
 
 def savecsvParticao(filename, tweet, processed, labels):
     with open(filename, 'w', encoding='utf-8') as file:
@@ -50,6 +49,17 @@ def savecsvParticao(filename, tweet, processed, labels):
                 file.write(str(item))
                 file.write(';')
                 file.write('\n')
+
+def menu():
+    print('Escolha uma das opções: ')
+    print('1 - Aplicar o k-medias')
+    print('2 - Aplicar Single-link')
+    print('3 - Aplicar ...')
+    print('4 - Aplicar ...')
+    print('5 - Mostrar PCAs')
+    print('-1 - Sair')
+    opcao = input('Opção: ')
+    return int(opcao)                
 
 def main():
     print('Started')
@@ -67,27 +77,25 @@ def main():
     with open('basesjson/sklearn_bagofwords.json') as json_data:
         bagofwords = json.load(json_data)
     
-    print('Escolha uma das opções: ')
-    print('1 - Aplicar o k-medias')
-    print('2 - Aplicar Single-link')
-    print('3 - Aplicar ...')
-    print('4 - Aplicar ...')
-    opcao = input('Opção: ')
-
-    # Aplicando o k-medias    
-    if opcao == '1':
-        algoritmo = 'KMeans';
-        k = input('Informe o Número de K ou informe 0 para Executar com varios valores para K: ')
-        if k == '0':
-            for x in range(1, 10):
-                particao = Kmedia(bagofwords, x)
-                AvaliaSalvaResultado(bagofwords, particao, algoritmo, k, processed, complete)
+    # Plot PCA
+    pca = PlotPCA(data=bagofwords)
+    opcao = menu()
+    while(opcao != -1):
+        # Aplicando o k-medias    
+        if opcao == 1:
+            k = input('Informe o Número de K ou informe 0 para Executar com varios valores para K: ')
+            if k == '0':
+                for x in range(1, 10):
+                    model = Kmedia(x)
+                    AvaliaSalvaResultado(bagofwords, model, processed, complete, pca)
+            else:
+                model = Kmedia(int(k))
+                AvaliaSalvaResultado(bagofwords, model, processed, complete, pca)
+        if opcao == 5:
+            plt.show()
         else:
-            particao = Kmedia(bagofwords, int(k))
-            AvaliaSalvaResultado(bagofwords, particao, algoritmo, k, processed, complete)
-
-    else:
-        print('outro')
+            print('outro')
+        opcao = menu()
 
     print('\nFinished')
 

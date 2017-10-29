@@ -41,6 +41,9 @@ class PlotPCA:
     def show(self):
         plt.show()
 
+    def savefig(self, filename):
+        plt.savefig(filename)
+
 def main():
    
     pca = PlotPCA(filename="basesjson/sklearn_bagofwords.json")
