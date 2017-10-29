@@ -7,18 +7,18 @@ import re
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
-basec = ['#000080', '#FF00FF', '#40E0D0', '#006400']
+basec = ["#896800",
+"#c992ff",
+"#00b86c",
+"#f436a7",
+"#017dd2",
+"#b73500"]
 
-def getcor(y):
-    basec = ['#000080', '#FF00FF', '#40E0D0', '#006400']
-    if(y=="-1"):
-        return basec[0]
-    return basec[int(y)]
-
-def plotpca(pca, words, y_pred, classnames):
-    plt.figure()
+def plotpca(title, pca, words, y_pred, classnames):
+    plt.figure(num=title)
+    plt.title(title)
     XPCA = pca.transform(words)
-    colors = [getcor(c) for c in y_pred]
+    colors = [basec[c] for c in y_pred]
 
     patches = [mpatches.Patch(color=basec[i], label=classn) for i,classn in enumerate(classnames)]
     plt.legend(handles=patches)
@@ -37,12 +37,16 @@ def main():
     pca.fit(bagofwords)
 
     #{"theme": "game", "product": "archeage", "tweet": "@tweetmee lol atleast i have csgo and archeage to keep me atleast a tad bit busy xp ahah", "class": "1"}
-    dicts = {"game":0,"movie":1, "smartphone":2}
-    Ys = [ [  item["class"], dicts[item["theme"]]  ] for item in complete]
+    dictclass = {"-1":0,"1":1}
+    dicttheme = {"game":0,"movie":1, "smartphone":2}
+    Ys = [ [  dictclass[item["class"]], dicttheme[item["theme"]]  ] for item in complete]
     Yclazz = [item[0] for item in Ys]
     Ytheme = [item[1] for item in Ys]
-    plotpca(pca, bagofwords,Yclazz , ["negative", "positive"])
-    plotpca(pca, bagofwords, Ytheme, ["game", "movie", "smartphone"])
+    dictthemeclass = {0:{0:0,1:1},1:{0:2, 1:3}, 2:{0:4, 1:5}}
+    Yclasstheme = [dictthemeclass[item[1]][item[0]] for item in Ys]    
+    plotpca("pca_class", pca, bagofwords, Yclazz , ["negative", "positive"])
+    plotpca("pca_theme", pca, bagofwords, Ytheme, ["game", "movie", "smartphone"])
+    plotpca("pca_classtheme", pca, bagofwords, Yclasstheme , ["negative_game","positive_game","negative_movie","positive_movie", "negative_smartphone", "positive_smartphone"])
     plt.show()
     print("Finish")
 
