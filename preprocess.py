@@ -4,7 +4,6 @@ from textdict import TextDict
 import numpy as np
 import re
 
-#from wordcloud import WordCloud #--> Módulo wordcloud
 import matplotlib.pyplot as plt
 from sklearn.feature_extraction.text import CountVectorizer #--> Classe utilizada para converter o array de strings em um array de binários
 from util import save, savecsv
@@ -25,17 +24,21 @@ def stats(name, data):
 
 def wordCloud(text, show=False):
     # Generate a word cloud image
-    wordcloud = WordCloud(width=1024, height=768, background_color="white", stopwords=[]).generate(text)
+    try:
+        from wordcloud import WordCloud #--> Módulo wordcloud
+        wordcloud = WordCloud(width=1024, height=768, background_color="white", stopwords=[]).generate(text)
 
-    wordcloud.to_file('cloudword/cloudword.png')
-    if show:
-        plt.figure()
-        # Display the generated image:
-        # the matplotlib way:    
-        plt.imshow(wordcloud, interpolation='bilinear')
-        plt.axis("off")
-        # lower max_font_size
-        plt.show()
+        wordcloud.to_file('cloudword/cloudword.png')
+        if show:
+            plt.figure()
+            # Display the generated image:
+            # the matplotlib way:    
+            plt.imshow(wordcloud, interpolation='bilinear')
+            plt.axis("off")
+            # lower max_font_size
+            plt.show()
+    except Exception as e:
+        print("WordCloud não suportado, Error: " + str(e))
 
 def process(data):
     matrix = [item.replace('\t', ' \t').split(' ') for item in data]
