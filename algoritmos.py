@@ -5,7 +5,7 @@ from pca import PlotPCA
 import hdbscan
 import matplotlib.pyplot as plt
 from time import time
-from sklearn import metrics
+from sklearn import metrics, mixture
 from sklearn.cluster import KMeans
 import numpy as np
 from util import mkdir
@@ -17,6 +17,13 @@ import matplotlib.pyplot as plt
 def plotpca(pca, algoritmo, title, data, Y):
     pca.plotpca(title, data, Y, set(Y))
     pca.savefig("{0}/{1}.png".format(algoritmo, title))
+
+def GaussianMixture(k):
+    print("Criando Modelo com GaussianMixture e k="+str(k))
+    model = mixture.GaussianMixture(n_components=k, covariance_type='full')
+    model.title = "GaussianMixture_k{}".format(k)
+    model.name = "GaussianMixture"
+    return model
 
 def Kmedia(k):
     print("Criando Modelo com Kmedia e k="+str(k))
@@ -35,12 +42,16 @@ def singleLink(distance, k):
 def AvaliaSalvaResultado(data, model, processed, complete, pca=None):
     print("Gerando a partição para: " + model.title)
     model.fit(data)
+    if hasattr(model, 'labels_'):
+        particao = model.labels_
+    else:
+        particao = model.predict(data)
+
     print("Avaliando a partição encontrada: " + model.title)
     tweets = [item['tweet'] for item in complete]  
     theme = [item['theme'] for item in complete]  
     classe = [item['class'] for item in complete]  
     algoritmo = model.name
-    particao = model.labels_
     savecsvParticao("{0}/{1}.csv".format(model.name, model.title), tweets, processed, particao)
     print("Indice Rand ajustado com relação a Classe "+str(metrics.adjusted_rand_score(classe, particao)))
     print("Indice Rand ajustado com relação ao Tema "+str(metrics.adjusted_rand_score(theme, particao)))
@@ -67,7 +78,7 @@ def menu():
     print('1 - Aplicar o k-medias')
     print('2 - Aplicar Single-link')
     print('3 - Aplicar ...')
-    print('4 - Aplicar ...')
+    print('4 - Aplicar GaussianMixture')
     print('5 - Mostrar PCAs')
     print('-1 - Sair')
     opcao = input('Opção: ')
@@ -115,8 +126,15 @@ def main():
                     models.append(singleLink(distance, x))
             else:
                 models.append(singleLink(distance, k))
+        elif opcao == 4:
+            k = inputK()
+            if k == 0:
+                for x in range(2, 10):
+                    models.append(GaussianMixture(x))
+            else:
+                models.append(GaussianMixture(k))
         elif opcao == 5:
-            plt.show()
+            plt.show()        
         else:
             print('outro')
         
