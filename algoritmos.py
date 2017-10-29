@@ -1,10 +1,10 @@
+import time
 import csv
 import json
 from textdict import TextDict
 from pca import PlotPCA
 import hdbscan
 import matplotlib.pyplot as plt
-from time import time
 from sklearn import metrics, cluster, datasets, mixture
 from sklearn.cluster import KMeans
 import numpy as np
@@ -15,33 +15,44 @@ from sklearn.neighbors import kneighbors_graph
 
 import matplotlib.pyplot as plt
 
-def plotpca(pca, algoritmo, title, data, Y):
+def plotpca(pca, algoritmo, title, data, Y, text):
     pca.plotpca(title, data, Y, set(Y))
-    pca.savefig("{0}/{1}.png".format(algoritmo, title))
+    pca.savefig("{0}/{1}.png".format(algoritmo, title))    
+    plt.figtext(.02, .02, text)
 
-def GaussianMixture(k):
+def GaussianMixture(k):    
     print("Criando Modelo com GaussianMixture e k="+str(k))
+    t0 = time.time()
     model = mixture.GaussianMixture(n_components=k, covariance_type='full')
     model.title = "GaussianMixture_k{}".format(k)
     model.name = "GaussianMixture"
+    t1 = time.time()
+    model.creationtime = t1-t0
     return model
 
 def Kmedia(k):
     print("Criando Modelo com Kmedia e k="+str(k))
+    t0 = time.time()
     model = KMeans(n_clusters=k, max_iter=1000)    
     model.title = "KMeans_k{}".format(k)
     model.name = "KMeans"
+    t1 = time.time()
+    model.creationtime = t1-t0
     return model
 
 def singleLink(distance, k):
     print("Criando Modelo com SingleLink e k="+str(k))
+    t0 = time.time()
     model = SingleLink(distance, k) 
     model.title = "SingleLink_k{}".format(k)
     model.name = "SingleLink"
+    t1 = time.time()
+    model.creationtime = t1-t0
     return model
 
 def WardLink(data, k):
     print("Criando Modelo com WardLink e k="+str(k))
+    t0 = time.time()
     # connectivity matrix for structured Ward
     connectivity = kneighbors_graph(
         data, n_neighbors=k, include_self=False)
@@ -52,34 +63,46 @@ def WardLink(data, k):
         connectivity=connectivity)
     model.title = "WardLink_k{}".format(k)
     model.name = "WardLink"
+    t1 = time.time()
+    model.creationtime = t1-t0
     return model
 
 def SpectralClustering(k):
     print("Criando Modelo com SpectralClustering e k="+str(k))
+    t0 = time.time()
     model = cluster.SpectralClustering(
         n_clusters=k, eigen_solver='arpack',
         affinity="nearest_neighbors", n_neighbors=5)
     model.title = "SpectralClustering_k{}".format(k)
     model.name = "SpectralClustering"
+    t1 = time.time()
+    model.creationtime = t1-t0
     return model
 
 def DBSCAN():
-    print("Criando Modelo com SpectralClustering")    
+    print("Criando Modelo com SpectralClustering")  
+    t0 = time.time()  
     model = cluster.DBSCAN(eps=.3)
     model.title = "DBSCAN"
     model.name = "DBSCAN"
+    t1 = time.time()
+    model.creationtime = t1-t0
     return model
 
 def AffinityPropagation():
-    print("Criando Modelo com AffinityPropagation")    
+    print("Criando Modelo com AffinityPropagation")
+    t0 = time.time() 
     model = cluster.AffinityPropagation(
         damping=.9, preference=-200)
     model.title = "AffinityPropagation"
     model.name = "AffinityPropagation"
+    t1 = time.time()
+    model.creationtime = t1-t0
     return model
 
 def AgglomerativeClustering(data, k):
-    print("Criando Modelo com AgglomerativeClustering e k="+str(k))   
+    print("Criando Modelo com AgglomerativeClustering e k="+str(k)) 
+    t0 = time.time()  
      # connectivity matrix for structured Ward
     connectivity = kneighbors_graph(
         data, n_neighbors=3, include_self=False)
@@ -90,37 +113,49 @@ def AgglomerativeClustering(data, k):
         n_clusters=k, connectivity=connectivity)
     model.title = "AgglomerativeClustering_k{}".format(k)
     model.name = "AgglomerativeClustering"
+    t1 = time.time()
+    model.creationtime = t1-t0
     return model
 
 def Birch(k):
-    print("Criando Modelo com Birch e k="+str(k))   
+    print("Criando Modelo com Birch e k="+str(k))  
+    t0 = time.time() 
     model = cluster.Birch(n_clusters=k)
     model.title = "Birch_k{}".format(k)
     model.name = "Birch"
+    t1 = time.time()
+    model.creationtime = t1-t0
     return model
 
 def MeanShift():
-    print("Criando Modelo com MeanShift")   
+    print("Criando Modelo com MeanShift") 
+    t0 = time.time()  
     model = cluster.MeanShift(bandwidth=None, bin_seeding=True)
     model.title = "MeanShift"
     model.name = "MeanShift"
+    t1 = time.time()
+    model.creationtime = t1-t0
     return model
 
 def MiniBatchKMeans(k):
-    print("Criando Modelo com MiniBatchKMeans e k="+str(k))   
+    print("Criando Modelo com MiniBatchKMeans e k="+str(k))  
+    t0 = time.time() 
     model = cluster.MiniBatchKMeans(n_clusters=k)
     model.title = "MiniBatchKMeans_k{}".format(k)
     model.name = "MiniBatchKMeans"
+    t1 = time.time()
+    model.creationtime = t1-t0
     return model
 
 def AvaliaSalvaResultado(data, model, processed, complete, pca=None):
     print("Gerando a partição para: " + model.title)
+    t0 = time.time()    
     model.fit(data)
     if hasattr(model, 'labels_'):
         particao = model.labels_
     else:
         particao = model.predict(data)
-
+    t1 = time.time()
     print("Avaliando a partição encontrada: " + model.title)
     tweets = [item['tweet'] for item in complete]  
     theme = [item['theme'] for item in complete]  
@@ -128,17 +163,21 @@ def AvaliaSalvaResultado(data, model, processed, complete, pca=None):
     themeclasse = ['{0}_{1}'.format(item['theme'], item['class']) for item in complete]
     algoritmo = model.name
     savecsvParticao("{0}/{1}.csv".format(model.name, model.title), tweets, processed, particao)
-    print("Indice Rand ajustado com relação a Classe "+str(metrics.adjusted_rand_score(classe, particao)))
-    print("Indice Rand ajustado com relação ao Tema "+str(metrics.adjusted_rand_score(theme, particao)))
-    print("Indice Rand ajustado com relação ao Tema+Classe "+str(metrics.adjusted_rand_score(themeclasse, particao)))
+    executiontime = t1 - t0
+    strstats = 'Tempo Criação Modelo: %.2fs \n' % model.creationtime
+    strstats += 'Tempo Execução Modelo: %.2fs \n' % executiontime
+    strstats += 'Tempo Total Modelo: %.2fs \n' % (executiontime + model.creationtime)
+    strstats += "Indice Rand ajustado com relação a Classe: {0}\n".format(metrics.adjusted_rand_score(classe, particao))
+    strstats += "Indice Rand ajustado com relação ao Tema: {0}\n".format(metrics.adjusted_rand_score(theme, particao))
+    strstats += "Indice Rand ajustado com relação ao Tema+Classe: {0}\n".format(metrics.adjusted_rand_score(themeclasse, particao))
     
     try:
-        print("Indice Silhueta com relação a base inicial "+str(metrics.silhouette_score(data, particao)))
+        strstats += "Indice Silhueta com relação a base inicial: {0}\n".formatstr(metrics.silhouette_score(data, particao))
     except:
         pass
-
+    print(strstats)
     if(pca != None):
-        plotpca(pca, algoritmo, model.title, data, particao)
+        plotpca(pca, algoritmo, model.title, data, particao, strstats)
 
 def savecsvParticao(filename, tweet, processed, labels):
     mkdir(filename)
