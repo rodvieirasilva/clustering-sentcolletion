@@ -23,8 +23,9 @@ def Kmedia(k):
     return model
 
 def AvaliaSalvaResultado(data, model, processed, complete, pca=None):
-    print("Avaliando a partição encontrada: " + model.title)
+    print("Gerando a partição para: " + model.title)
     model.fit(data)
+    print("Avaliando a partição encontrada: " + model.title)
     tweets = [item['tweet'] for item in complete]  
     theme = [item['theme'] for item in complete]  
     classe = [item['class'] for item in complete]  
