@@ -36,14 +36,23 @@ def plotpca(title, data, Y):
     pca.plotpca(title, data, Y, set(Y))
     pca.show()
 
-def Kmedia(data, k):
+def Kmedia(data, k, tweets):
     model = KMeans(n_clusters=k, max_iter=1000)
     model.fit(data)
-    labels = 'grupos';
-    title = "KMeans_k{}.csv".format(k);
-    savecsv("KMeans/"+ title.format(k), labels, model.labels_)
-    plotpca(title, data,  model.labels_)
+    title = "KMeans_k{}".format(k)
+    savecsvParticao("KMeans\{}.csv".format(title), tweets, model.labels_)
+    plotpca(title, data, model.labels_)
     return 0
+
+def savecsvParticao(filename, tweet, labels):
+    with open(filename, 'w', encoding='utf-8') as file:
+           for idx, item in enumerate(labels):
+                file.write(str(tweet[idx]).replace(";", ""))
+                file.write(';')
+                file.write(str(item))
+                file.write(';')
+                file.write('\n')
+
 
 def savecsv(filename, header, data):
     with open(filename, 'w', encoding='utf-8') as file:
@@ -51,10 +60,11 @@ def savecsv(filename, header, data):
             file.write('"{}"'.format(cell))
             file.write(';')
         file.write('\n')
-        for cell in data:
-            file.write(str(cell))
-            file.write(';')
-            #file.write('\n')
+        for row in data:
+            for cell in row:
+                file.write(str(cell))
+                file.write(';')
+            file.write('\n')
 
 def main():
     print('Started')
@@ -63,6 +73,7 @@ def main():
     # Base de Dados Completa
     with open('complete.json') as json_data:
         complete = json.load(json_data)
+    tweets = [item['tweet'] for item in complete]  
 
     # Base de Dados Pré-Processada
     with open('sklearn_bagofwords.json') as json_data:
@@ -80,9 +91,9 @@ def main():
         k = input('Informe o Número de K ou informe 0 para Executar com varios valores para K: ')
         if k == '0':
             for x in range(1, 10):
-                Kmedia(bagofwords, x)
+                Kmedia(bagofwords, x, tweets)
         else:
-            Kmedia(bagofwords, int(k))
+            Kmedia(bagofwords, int(k), tweets)
 
     else:
         print('outro')
