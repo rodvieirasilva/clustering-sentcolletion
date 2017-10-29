@@ -5,12 +5,13 @@ from pca import PlotPCA
 import hdbscan
 import matplotlib.pyplot as plt
 from time import time
-from sklearn import metrics, mixture
+from sklearn import metrics, cluster, datasets, mixture
 from sklearn.cluster import KMeans
 import numpy as np
 from util import mkdir
 from sklearn.metrics.pairwise import pairwise_distances
 from singlelink import SingleLink
+from sklearn.neighbors import kneighbors_graph
 
 import matplotlib.pyplot as plt
 
@@ -39,6 +40,79 @@ def singleLink(distance, k):
     model.name = "SingleLink"
     return model
 
+def WardLink(data, k):
+    print("Criando Modelo com WardLink e k="+str(k))
+    # connectivity matrix for structured Ward
+    connectivity = kneighbors_graph(
+        data, n_neighbors=k, include_self=False)
+    # make connectivity symmetric
+    connectivity = 0.5 * (connectivity + connectivity.T)  
+    model = cluster.AgglomerativeClustering(
+        n_clusters=k, linkage='ward',
+        connectivity=connectivity)
+    model.title = "WardLink_k{}".format(k)
+    model.name = "WardLink"
+    return model
+
+def SpectralClustering(k):
+    print("Criando Modelo com SpectralClustering e k="+str(k))
+    model = cluster.SpectralClustering(
+        n_clusters=k, eigen_solver='arpack',
+        affinity="nearest_neighbors", n_neighbors=5)
+    model.title = "SpectralClustering_k{}".format(k)
+    model.name = "SpectralClustering"
+    return model
+
+def DBSCAN():
+    print("Criando Modelo com SpectralClustering")    
+    model = cluster.DBSCAN(eps=.3)
+    model.title = "DBSCAN"
+    model.name = "DBSCAN"
+    return model
+
+def AffinityPropagation():
+    print("Criando Modelo com AffinityPropagation")    
+    model = cluster.AffinityPropagation(
+        damping=.9, preference=-200)
+    model.title = "AffinityPropagation"
+    model.name = "AffinityPropagation"
+    return model
+
+def AgglomerativeClustering(data, k):
+    print("Criando Modelo com AgglomerativeClustering e k="+str(k))   
+     # connectivity matrix for structured Ward
+    connectivity = kneighbors_graph(
+        data, n_neighbors=3, include_self=False)
+    # make connectivity symmetric
+    connectivity = 0.5 * (connectivity + connectivity.T) 
+    model = cluster.AgglomerativeClustering(
+        linkage="average", affinity="cityblock",
+        n_clusters=k, connectivity=connectivity)
+    model.title = "AgglomerativeClustering_k{}".format(k)
+    model.name = "AgglomerativeClustering"
+    return model
+
+def Birch(k):
+    print("Criando Modelo com Birch e k="+str(k))   
+    model = cluster.Birch(n_clusters=k)
+    model.title = "Birch_k{}".format(k)
+    model.name = "Birch"
+    return model
+
+def MeanShift():
+    print("Criando Modelo com MeanShift")   
+    model = cluster.MeanShift(bandwidth=None, bin_seeding=True)
+    model.title = "MeanShift"
+    model.name = "MeanShift"
+    return model
+
+def MiniBatchKMeans(k):
+    print("Criando Modelo com MiniBatchKMeans e k="+str(k))   
+    model = cluster.MiniBatchKMeans(n_clusters=k)
+    model.title = "MiniBatchKMeans_k{}".format(k)
+    model.name = "MiniBatchKMeans"
+    return model
+
 def AvaliaSalvaResultado(data, model, processed, complete, pca=None):
     print("Gerando a partição para: " + model.title)
     model.fit(data)
@@ -58,7 +132,10 @@ def AvaliaSalvaResultado(data, model, processed, complete, pca=None):
     print("Indice Rand ajustado com relação ao Tema "+str(metrics.adjusted_rand_score(theme, particao)))
     print("Indice Rand ajustado com relação ao Tema+Classe "+str(metrics.adjusted_rand_score(themeclasse, particao)))
     
-    print("Indice Silhueta com relação a base inicial "+str(metrics.silhouette_score(data, particao)))
+    try:
+        print("Indice Silhueta com relação a base inicial "+str(metrics.silhouette_score(data, particao)))
+    except:
+        pass
 
     if(pca != None):
         plotpca(pca, algoritmo, model.title, data, particao)
@@ -81,14 +158,25 @@ def menu():
     print('2 - Aplicar Single-link')
     print('3 - Aplicar ...')
     print('4 - Aplicar GaussianMixture')
-    print('5 - Mostrar PCAs')
+    print('5 - Aplicar MiniBatchKMeans')
+    print('6 - Aplicar AffinityPropagation')
+    print('7 - Aplicar MeanShift')
+    print('8 - Aplicar SpectralClustering')
+    print('9 - Aplicar WardLink')
+    print('10 - Aplicar AgglomerativeClustering')
+    print('11 - Aplicar DBSCAN')
+    print('12 - Aplicar Birch')
+    print('13 - Mostrar PCAs')
     print('-1 - Sair')
     opcao = input('Opção: ')
     return int(opcao)                
 
 def inputK():
     k = input('Informe o Número de K ou informe 0 para Executar com varios valores para K: ')
-    return int(k)
+    k = int(k)
+    if k == 0:
+        return range(2, 10)
+    return [k]
 
 def main():
     print('Started')
@@ -114,34 +202,52 @@ def main():
         interval = 0
         # Aplicando o k-medias    
         if opcao == 1:
-            k = inputK()
-            if k == 0:
-                for x in range(2, 10):
-                    models.append(Kmedia(x))
-            else:
+            ks = inputK()
+            for k in ks:
                 models.append(Kmedia(k))
+
         elif opcao == 2:
-            k = inputK()
+            ks = inputK()
             distance = pairwise_distances(bagofwords, Y=None, metric='euclidean', n_jobs=1)
-            if k == 0:
-                for x in range(2, 10):
-                    models.append(singleLink(distance, x))
-            else:
+            for k in ks:
                 models.append(singleLink(distance, k))
+
         elif opcao == 4:
-            k = inputK()
-            if k == 0:
-                for x in range(2, 10):
-                    models.append(GaussianMixture(x))
-            else:
-                models.append(GaussianMixture(k))
-        elif opcao == 5:
-            plt.show()        
+            ks = inputK()
+            for k in ks:
+                models.append(GaussianMixture(k))          
+        elif opcao==5:
+            ks = inputK()
+            for k in ks:
+                models.append(MiniBatchKMeans(k))
+        elif opcao==6:
+            models.append(AffinityPropagation())
+        elif opcao==7:
+            models.append(MeanShift())                
+        elif opcao==8:
+            ks = inputK()
+            for k in ks:
+                models.append(SpectralClustering(k))            
+        elif opcao==9:
+            ks = inputK()
+            for k in ks:
+                models.append(WardLink(bagofwords, k))
+        elif opcao==10:
+            ks = inputK()
+            for k in ks:
+                models.append(AgglomerativeClustering(bagofwords, k))
+        elif opcao==11:
+            models.append(DBSCAN()) 
+        elif opcao==12:
+            ks = inputK()
+            for k in ks:
+                models.append(Birch(k))
+        elif opcao == 13:
+            plt.show()      
         else:
             print('outro')
         
-        for model in models:
-            
+        for model in models:            
             AvaliaSalvaResultado(bagofwords, model, processed, complete, pca)
             
         opcao = menu()
