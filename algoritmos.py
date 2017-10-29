@@ -35,8 +35,8 @@ def AvaliaSalvaResultado(data, particao, algoritmo, k, processed, complete):
     savecsvParticao("{0}\{0}_k{1}.csv".format(algoritmo, k), tweets, processed, particao)
     print("Indice Rand ajustado com relação a Classe "+str(metrics.adjusted_rand_score(classe, particao)))
     print("Indice Rand ajustado com relação ao Tema "+str(metrics.adjusted_rand_score(theme, particao)))
-    
     print("Indice Silhueta com relação a base inicial "+str(metrics.silhouette_score(data, particao)))
+    
 
     return 0
 
@@ -50,6 +50,7 @@ def savecsvParticao(filename, tweet, processed, labels):
                 file.write(str(item))
                 file.write(';')
                 file.write('\n')
+
 
 def main():
     print('Started')
