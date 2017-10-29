@@ -31,13 +31,23 @@ def stats(name, data):
     print('--------')
 
 
-def Kmedia(data, k):
+def Kmedia(data, k, tweets):
     model = KMeans(n_clusters=k, max_iter=1000)
     model.fit(data)
-    labels = 'grupos';
-    savecsv("KMeans\KMeans_k{}.csv".format(k), labels, model.labels_)
+   
+    savecsvParticao("KMeans\KMeans_k{}.csv".format(k), tweets, model.labels_)
 
     return 0
+
+def savecsvParticao(filename, tweet, labels):
+    with open(filename, 'w', encoding='utf-8') as file:
+           for idx, item in enumerate(labels):
+                file.write(str(tweet[idx]).replace(";", ""))
+                file.write(';')
+                file.write(str(item))
+                file.write(';')
+                file.write('\n')
+
 
 def savecsv(filename, header, data):
     with open(filename, 'w', encoding='utf-8') as file:
@@ -45,11 +55,11 @@ def savecsv(filename, header, data):
             file.write('"{}"'.format(cell))
             file.write(';')
         file.write('\n')
-        for cell in data:
-            #for cell in row:
-            file.write(str(cell))
-            file.write(';')
-            #file.write('\n')
+        for row in data:
+            for cell in row:
+                file.write(str(cell))
+                file.write(';')
+            file.write('\n')
 
 def main():
     print('Started')
@@ -58,6 +68,7 @@ def main():
     # Base de Dados Completa
     with open('complete.json') as json_data:
         complete = json.load(json_data)
+    tweets = [item['tweet'] for item in complete]  
 
     # Base de Dados Pré-Processada
     with open('sklearn_bagofwords.json') as json_data:
@@ -75,9 +86,9 @@ def main():
         k = input('Informe o NUmero de K ou informe 0 para Executar com varios valores para K: ')
         if k == '0':
             for x in range(1, 10):
-                Kmedia(bagofwords, x)
+                Kmedia(bagofwords, x, tweets)
         else:
-            Kmedia(bagofwords, int(k))
+            Kmedia(bagofwords, int(k), tweets)
 
     else:
         print('outro')
