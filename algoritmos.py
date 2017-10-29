@@ -51,10 +51,12 @@ def AvaliaSalvaResultado(data, model, processed, complete, pca=None):
     tweets = [item['tweet'] for item in complete]  
     theme = [item['theme'] for item in complete]  
     classe = [item['class'] for item in complete]  
+    themeclasse = ['{0}_{1}'.format(item['theme'], item['class']) for item in complete]
     algoritmo = model.name
     savecsvParticao("{0}/{1}.csv".format(model.name, model.title), tweets, processed, particao)
     print("Indice Rand ajustado com relação a Classe "+str(metrics.adjusted_rand_score(classe, particao)))
     print("Indice Rand ajustado com relação ao Tema "+str(metrics.adjusted_rand_score(theme, particao)))
+    print("Indice Rand ajustado com relação ao Tema+Classe "+str(metrics.adjusted_rand_score(themeclasse, particao)))
     
     print("Indice Silhueta com relação a base inicial "+str(metrics.silhouette_score(data, particao)))
 
