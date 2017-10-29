@@ -39,9 +39,15 @@ def plotpca(title, data, Y):
 def Kmedia(data, k, tweets):
     model = KMeans(n_clusters=k, max_iter=1000)
     model.fit(data)
+<<<<<<< HEAD
     title = "KMeans_k{}".format(k)
     savecsvParticao("KMeans\{}.csv".format(title), tweets, model.labels_)
     plotpca(title, data, model.labels_)
+=======
+   
+    savecsvParticao("KMeans\KMeans_k{}.csv".format(k), tweets, model.labels_)
+
+>>>>>>> d14f5594e13c3884546228ea3c5f3c3230104ccd
     return 0
 
 def savecsvParticao(filename, tweet, labels):
