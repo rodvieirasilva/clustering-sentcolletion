@@ -169,7 +169,7 @@ def AvaliaSalvaResultado(data, model, processed, complete, stats, pca=None):
     else:
         particao = model.predict(data)
     stat.endExecutionTime = time.time()
-    stat.calc(data, particao, model.cluster_centers_)
+    stat.calc(data, particao)
     print(stat.toString())
     
     print("Avaliando a partição encontrada: " + model.title)

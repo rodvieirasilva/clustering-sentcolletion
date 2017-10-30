@@ -121,7 +121,7 @@ class Stat:
         self.themeclasse = themeclasse
         self.k = k
 
-    def calc(self, data, labels, centroids):
+    def calc(self, data, labels):
         self.creationTime = self.endCreationTime - self.beginCreationTime
         self.executionTime = self.endExecutionTime - self.beginExecutionTime
         self.totalTime= self.creationTime + self.executionTime
@@ -135,14 +135,24 @@ class Stat:
             pass
         
         try:
-            self.index_intracluster_variance_ = self.index_intracluster_variance(data, labels, centroids)
+            self.index_intracluster_variance_ = self.index_intracluster_variance(data, labels)
         except:
             pass
 
-    def index_intracluster_variance(self, data, labels, centroids):
+    def index_intracluster_variance(self, data, labels):
+
+        # Calculo das Centroides
+        clusters = np.unique(labels)
+        cluster_centers = [];
+        for item in clusters:
+            cluster_elements = np.array(data)[labels == item]
+            cluster_center = sum(cluster_elements) / len(cluster_elements)
+            cluster_centers.append(cluster_center)
+
+        # Calculo da Variancia Intra-Cluster
         sum_distances = 0
         n = len(labels)
-        for idx, item in enumerate(centroids):
+        for idx, item in enumerate(cluster_centers):
             sum_distances += sum(metrics.pairwise.pairwise_distances(np.array(data)[labels == idx], np.array(item).reshape(1, -1), metric='euclidean'))
         
         return (int(sum_distances)/n)**(1/2)
