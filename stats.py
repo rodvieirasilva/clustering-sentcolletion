@@ -1,5 +1,6 @@
 from sklearn import metrics
 import matplotlib.pyplot as plt
+import numpy as np
 
 class StatList(list):
 
@@ -120,31 +121,31 @@ class Stat:
         self.themeclasse = themeclasse
         self.k = k
 
-    def calc(self, data, particao, centroids):
+    def calc(self, data, labels, centroids):
         self.creationTime = self.endCreationTime - self.beginCreationTime
         self.executionTime = self.endExecutionTime - self.beginExecutionTime
         self.totalTime= self.creationTime + self.executionTime
-        self.adjusted_rand_score_classe = metrics.adjusted_rand_score(self.classe, particao)
-        self.adjusted_rand_score_theme = metrics.adjusted_rand_score(self.theme , particao)
-        self.adjusted_rand_score_themeclasse = metrics.adjusted_rand_score(self.themeclasse, particao)
+        self.adjusted_rand_score_classe = metrics.adjusted_rand_score(self.classe, labels)
+        self.adjusted_rand_score_theme = metrics.adjusted_rand_score(self.theme , labels)
+        self.adjusted_rand_score_themeclasse = metrics.adjusted_rand_score(self.themeclasse, labels)
 
         try:
-            self.silhouette_score_ = metrics.silhouette_score(data, particao)
+            self.silhouette_score_ = metrics.silhouette_score(data, labels)
         except:
             pass
         
         try:
-            self.index_intracluster_variance_ = self.index_intracluster_variance(data, particao, centroids)
+            self.index_intracluster_variance_ = self.index_intracluster_variance(data, labels, centroids)
         except:
             pass
 
-    def index_intracluster_variance(data, labels, centroids):
-        soma = 0
+    def index_intracluster_variance(self, data, labels, centroids):
+        sum_distances = 0
         n = len(labels)
         for idx, item in enumerate(centroids):
-            soma += sum(metrics.pairwise.pairwise_distances(np.array(data)[labels == idx], np.array(item).reshape(1, -1), metric='euclidean'))
+            sum_distances += sum(metrics.pairwise.pairwise_distances(np.array(data)[labels == idx], np.array(item).reshape(1, -1), metric='euclidean'))
         
-        return (int(soma)/n)**(1/2)
+        return (int(sum_distances)/n)**(1/2)
 
     def toString(self):
         strstats = '"Tempo Criacao Modelo";"%.2fs"\n' % self.creationTime
@@ -153,17 +154,11 @@ class Stat:
         strstats += '"Indice Rand ajustado com relacao a Classe";"{0}"\n'.format(self.adjusted_rand_score_classe)
         strstats += '"Indice Rand ajustado com relacao ao Tema";"{0}"\n'.format(self.adjusted_rand_score_theme)
         strstats += '"Indice Rand ajustado com relacao ao Tema+Classe";"{0}"\n'.format(self.adjusted_rand_score_themeclasse)
+        strstats += '"Indice Silhueta com relacao a base inicial";"{0}"\n'.format(self.silhouette_score_)
+        strstats += '"Indice Variancia Intra-cluster";"{0}"\n'.format(self.index_intracluster_variance_)
 
-        try:
-            strstats += '"Indice Silhueta com relacao a base inicial";"{0}"\n'.format(self.silhouette_score_)
-        except:
-            pass
-        
-        try:
-            strstats += '"Indice Variancia Intra-cluster";"{0}"\n'.format(self.index_intracluster_variance_)
-        except:
-            pass
         return strstats
+
     def toStringChart(self):
         strstats = 'Tempo Criacao Modelo: %.2fs\n' % self.creationTime
         strstats += 'Tempo Execucao Modelo: %.2fs\n' % self.executionTime
