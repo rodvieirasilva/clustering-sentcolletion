@@ -30,7 +30,7 @@ class PlotPCA:
 
     def plotpca(self, title, words, y_pred, classnames):
         plt.figure(num=title)
-        plt.gca().set_position((.1, .3, .8, .6))
+        plt.gca().set_position((.1, .4, .8, .6))
         plt.title(title)
         XPCA = self.pca.transform(words)
         colors = [self.basec[ (c % len(self.basec)) ] for c in y_pred]
