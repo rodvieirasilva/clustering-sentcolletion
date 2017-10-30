@@ -3,7 +3,6 @@ import csv
 import json
 from textdict import TextDict
 from pca import PlotPCA
-import hdbscan
 import matplotlib.pyplot as plt
 from sklearn import metrics, cluster, datasets, mixture
 from sklearn.cluster import KMeans
