@@ -147,6 +147,14 @@ def MiniBatchKMeans(k):
     model.creationtime = t1-t0
     return model
 
+def index_intracluster_variance(data, labels, centroids):
+    soma = 0
+    n = len(labels)
+    for idx, item in enumerate(centroids):
+        soma += sum(metrics.pairwise.pairwise_distances(np.array(data)[labels == idx], np.array(item).reshape(1, -1), metric='euclidean'));
+    
+    return (int(soma)/n)**(1/2)
+
 def AvaliaSalvaResultado(data, model, processed, complete, pca=None):
     print("Gerando a partição para: " + model.title)
     t0 = time.time()    
@@ -162,26 +170,37 @@ def AvaliaSalvaResultado(data, model, processed, complete, pca=None):
     classe = [item['class'] for item in complete]  
     themeclasse = ['{0}_{1}'.format(item['theme'], item['class']) for item in complete]
     algoritmo = model.name
-    savecsvParticao("{0}/{1}.csv".format(model.name, model.title), tweets, processed, particao)
+
     executiontime = t1 - t0
-    strstats = 'Tempo Criação Modelo: %.2fs \n' % model.creationtime
-    strstats += 'Tempo Execução Modelo: %.2fs \n' % executiontime
+    strstats = 'Tempo Criacao Modelo: %.2fs \n' % model.creationtime
+    strstats += 'Tempo Execucao Modelo: %.2fs \n' % executiontime
     strstats += 'Tempo Total Modelo: %.2fs \n' % (executiontime + model.creationtime)
-    strstats += "Indice Rand ajustado com relação a Classe: {0}\n".format(metrics.adjusted_rand_score(classe, particao))
-    strstats += "Indice Rand ajustado com relação ao Tema: {0}\n".format(metrics.adjusted_rand_score(theme, particao))
-    strstats += "Indice Rand ajustado com relação ao Tema+Classe: {0}\n".format(metrics.adjusted_rand_score(themeclasse, particao))
-    
+    strstats += "Indice Rand ajustado com relacao a Classe: {0}\n".format(metrics.adjusted_rand_score(classe, particao))
+    strstats += "Indice Rand ajustado com relacao ao Tema: {0}\n".format(metrics.adjusted_rand_score(theme, particao))
+    strstats += "Indice Rand ajustado com relacao ao Tema+Classe: {0}\n".format(metrics.adjusted_rand_score(themeclasse, particao))
+
     try:
-        strstats += "Indice Silhueta com relação a base inicial: {0}\n".formatstr(metrics.silhouette_score(data, particao))
+        strstats += "Indice Silhueta com relacao a base inicial: {0}\n".format(metrics.silhouette_score(data, particao))
     except:
         pass
+    
+    try:
+        strstats += "Indice Variancia Intra-cluster: {0}\n".format(index_intracluster_variance(data, particao, model.cluster_centers_))
+    except:
+        pass
+    
     print(strstats)
+    savecsvParticao("{0}/{1}.csv".format(model.name, model.title), tweets, processed, particao, strstats)
+
     if(pca != None):
         plotpca(pca, algoritmo, model.title, data, particao, strstats)
 
-def savecsvParticao(filename, tweet, processed, labels):
+def savecsvParticao(filename, tweet, processed, labels, strstats):
     mkdir(filename)
     with open(filename, 'w', encoding='utf-8') as file:
+           file.write(strstats)
+           file.write('\n\n')
+
            for idx, item in enumerate(labels):
                 file.write(str(tweet[idx]).replace(";", ""))
                 file.write(';')
