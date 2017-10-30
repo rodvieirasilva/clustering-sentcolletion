@@ -120,20 +120,21 @@ class Stat:
         self.themeclasse = themeclasse
         self.k = k
 
-    def calc(self, data, particao):
+    def calc(self, data, particao, centroids):
         self.creationTime = self.endCreationTime - self.beginCreationTime
         self.executionTime = self.endExecutionTime - self.beginExecutionTime
         self.totalTime= self.creationTime + self.executionTime
         self.adjusted_rand_score_classe = metrics.adjusted_rand_score(self.classe, particao)
         self.adjusted_rand_score_theme = metrics.adjusted_rand_score(self.theme , particao)
         self.adjusted_rand_score_themeclasse = metrics.adjusted_rand_score(self.themeclasse, particao)
+
         try:
-            silhouette_score_ = metrics.silhouette_score(data, particao)
+            self.silhouette_score_ = metrics.silhouette_score(data, particao)
         except:
             pass
         
         try:
-            index_intracluster_variance_ = self.index_intracluster_variance(data, particao, model.cluster_centers_)
+            self.index_intracluster_variance_ = self.index_intracluster_variance(data, particao, centroids)
         except:
             pass
 
