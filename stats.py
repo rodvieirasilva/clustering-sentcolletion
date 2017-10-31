@@ -192,7 +192,7 @@ class Stat:
         for idx, item in enumerate(cluster_centers):
             sum_distances += sum(metrics.pairwise.pairwise_distances(np.array(data)[labels == idx], np.array(item).reshape(1, -1), metric='euclidean'))
         
-        return (int(sum_distances)/n)**(1/2)
+        return (float(sum_distances)/n)**(0.5)
 
     def toString(self):
         strstats = '"Tempo Criacao Modelo";"%.2fs"\n' % self.creationTime
