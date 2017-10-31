@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 class StatList(list):
+    basename=None
 
     def __init__(self, complete):
         self.theme = [item['theme'] for item in complete]  
@@ -19,47 +20,55 @@ class StatList(list):
         plots.extend(
         [
             {
+               "name": "creation_time",
                "ylabel": "Creation Time",
                 "xlabel": "K",
                 "dataX": [],
                 "dataY": []
             },
             {
+               "name": "execution_time",
                "ylabel": "Execution Time",
                 "xlabel": "K",
                 "dataX": [],
                 "dataY": []
             },
             {
+                "name": "total_time",
                 "ylabel": "Total Time",
                 "xlabel": "K",
                 "dataX": [],
                 "dataY": []
             },
             {
+                "name": "ind_rand_adj_classe",
                 "ylabel": "Indice Rand ajustado com relacao a Classe",
                 "xlabel": "K",
                 "dataX": [],
                 "dataY": []
             },
             {
+                "name": "ind_rand_adj_theme",
                 "ylabel": "Indice Rand ajustado com relacao ao Tema",
                 "xlabel": "K",
                 "dataX": [],
                 "dataY": []
             },
             {
+                "name": "ind_rand_adj_theme_class",
                 "ylabel": "Indice Rand ajustado com relacao ao Tema+Classe",
                 "xlabel": "K",
                 "dataX": [],
                 "dataY": []
             },{
+                "name": "ind_sil",
                 "ylabel": "Indice Silhueta com relacao a base inicial",
                 "xlabel": "K",
                 "dataX": [],
                 "dataY": []
             },
             {
+                "name": "var_intra_cluster",
                 "ylabel": "Indice Variancia Intra-cluster",
                 "xlabel": "K",
                 "dataX": [],
@@ -88,14 +97,14 @@ class StatList(list):
             plt.ylabel(p["ylabel"])
             plt.xlabel(p["xlabel"])
             plt.plot(p["dataX"], p["dataY"])
-            print(p["dataX"])
-            print(p)
+            plt.savefig("{0}_{1}.png".format(self.basename, p["name"]))
         #times
-        plt.figure()
-        plt.ylabel("Time")
-        plt.xlabel("k")
+        fig, ax = plt.subplots()
+        ax.set_ylabel("Time")
+        ax.set_xlabel("k")
         for plot in plots[0:3]:
-            plt.plot(plot["dataX"], plot["dataY"], label=plot["ylabel"])
+            ax.plot(plot["dataX"], plot["dataY"], label=plot["ylabel"])
+        plt.savefig("{0}_times.png".format(self.basename))
 
 class Stat:
     beginCreationTime = None
@@ -143,7 +152,7 @@ class Stat:
 
         # Calculo das Centroides
         clusters = np.unique(labels)
-        cluster_centers = [];
+        cluster_centers = []
         for item in clusters:
             cluster_elements = np.array(data)[labels == item]
             cluster_center = sum(cluster_elements) / len(cluster_elements)

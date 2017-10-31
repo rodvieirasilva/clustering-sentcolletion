@@ -248,43 +248,54 @@ def main():
         # Aplicando o k-medias    
         if opcao == 1:
             ks = inputK()
+            statList.basename="KMeans/stats_"
             for k in ks:
-                models.append(Kmedia(k))
+                models.append(Kmedia(k))                
 
         elif opcao == 2:
             ks = inputK()
-            distance = pairwise_distances(bagofwords, Y=None, metric='euclidean', n_jobs=1)
+            statList.basename="SingleLink/stats_"
+            distance = pairwise_distances(bagofwords, Y=None, metric='euclidean', n_jobs=1)            
             for k in ks:
                 models.append(singleLink(distance, k))
 
         elif opcao == 4:
             ks = inputK()
+            statList.basename="GaussianMixture/stats_"
             for k in ks:
                 models.append(GaussianMixture(k))          
         elif opcao==5:
             ks = inputK()
+            statList.basename="MiniBatchKMeans/stats_"
             for k in ks:
                 models.append(MiniBatchKMeans(k))
         elif opcao==6:
+            statList.basename="AffinityPropagation/stats_"
             models.append(AffinityPropagation())
         elif opcao==7:
+            statList.basename="MeanShift/stats_"
             models.append(MeanShift())                
         elif opcao==8:
             ks = inputK()
+            statList.basename="SpectralClustering/stats_"
             for k in ks:
                 models.append(SpectralClustering(k))            
         elif opcao==9:
             ks = inputK()
+            statList.basename="WardLink/stats_"
             for k in ks:
                 models.append(WardLink(bagofwords, k))
         elif opcao==10:
             ks = inputK()
+            statList.basename="AgglomerativeClustering/stats_"
             for k in ks:
                 models.append(AgglomerativeClustering(bagofwords, k))
         elif opcao==11:
+            statList.basename="DBSCAN/stats_"
             models.append(DBSCAN()) 
         elif opcao==12:
             ks = inputK()
+            statList.basename="Birch/stats_"
             for k in ks:
                 models.append(Birch(k))
         elif opcao == 13:
