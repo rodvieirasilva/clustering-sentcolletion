@@ -9,6 +9,7 @@ from sklearn.cluster import KMeans
 import numpy as np
 from util import mkdir
 from sklearn.metrics.pairwise import pairwise_distances
+from scipy.spatial.distance  import pdist
 from singlelink import SingleLink
 from sklearn.neighbors import kneighbors_graph
 from stats import StatList
@@ -256,7 +257,8 @@ def main():
             ks = inputK()
             statList.name="SingleLink"
             statList.basefilename="SingleLink/stats_"
-            distance = pairwise_distances(bagofwords, Y=None, metric='euclidean', n_jobs=1)            
+            #distance = pairwise_distances(bagofwords, Y=None, metric='euclidean', n_jobs=1)            
+            distance = pdist(bagofwords, metric='euclidean')
             for k in ks:
                 models.append(singleLink(distance, k))
 
