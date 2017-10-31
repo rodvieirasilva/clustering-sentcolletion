@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 class StatList(list):
-    basename=None
-
+    name=None
+    basefilename=None
     def __init__(self, complete):
         self.theme = [item['theme'] for item in complete]  
         self.classe = [item['class'] for item in complete]  
@@ -21,55 +21,71 @@ class StatList(list):
         [
             {
                "name": "creation_time",
-               "ylabel": "Creation Time",
+               "title": "Creation Time {0}".format(self.name),
+               "label": "Creation Time",
+               "ylabel": "Time(s)",
                 "xlabel": "K",
                 "dataX": [],
                 "dataY": []
             },
             {
                "name": "execution_time",
-               "ylabel": "Execution Time",
+               "title": "Execution Time {0}".format(self.name),
+               "label": "Execution Time",
+               "ylabel": "Time(s)",
                 "xlabel": "K",
                 "dataX": [],
                 "dataY": []
             },
             {
                 "name": "total_time",
-                "ylabel": "Total Time",
+                "title": "Total Time {0}".format(self.name),
+                "label": "Total Time",
+                "ylabel": "Time(s)",
                 "xlabel": "K",
                 "dataX": [],
                 "dataY": []
             },
             {
                 "name": "ind_rand_adj_classe",
-                "ylabel": "Indice Rand ajustado com relacao a Classe",
+                "title": "Indice Rand ajustado com relacao a Classe - {0}".format(self.name),
+                "label": "Indice Rand ajustado com relacao a Classe",
+                "ylabel": "Vlr. Indice",
                 "xlabel": "K",
                 "dataX": [],
                 "dataY": []
             },
             {
                 "name": "ind_rand_adj_theme",
-                "ylabel": "Indice Rand ajustado com relacao ao Tema",
+                "title": "Indice Rand ajustado com relacao ao Tema - {0}".format(self.name),
+                "label": "Indice Rand ajustado com relacao ao Tema",
+                "ylabel": "Vlr. Indice",
                 "xlabel": "K",
                 "dataX": [],
                 "dataY": []
             },
             {
                 "name": "ind_rand_adj_theme_class",
-                "ylabel": "Indice Rand ajustado com relacao ao Tema+Classe",
+                "title": "Indice Rand ajustado com relacao ao Tema+Classe - {0}".format(self.name),
+                "label": "Indice Rand ajustado com relacao ao Tema+Classe",
+                "ylabel": "Vlr. Indice",
                 "xlabel": "K",
                 "dataX": [],
                 "dataY": []
             },{
                 "name": "ind_sil",
-                "ylabel": "Indice Silhueta com relacao a base inicial",
+                "title": "Indice Silhueta com relacao a base inicial - {0}".format(self.name),
+                "label": "Indice Silhueta com relacao a base inicial",
+                "ylabel": "Vlr. Indice",
                 "xlabel": "K",
                 "dataX": [],
                 "dataY": []
             },
             {
                 "name": "var_intra_cluster",
-                "ylabel": "Indice Variancia Intra-cluster",
+                "title": "Indice Variancia Intra-cluster - {0}".format(self.name),
+                "label": "Indice Variancia Intra-cluster",
+                "ylabel": "Vlr. Indice",
                 "xlabel": "K",
                 "dataX": [],
                 "dataY": []
@@ -94,17 +110,29 @@ class StatList(list):
             plots[7]["dataY"].append(stat.index_intracluster_variance_)
         for p in plots:
             plt.figure()
+            plt.title(p["title"])
             plt.ylabel(p["ylabel"])
             plt.xlabel(p["xlabel"])
             plt.plot(p["dataX"], p["dataY"])
-            plt.savefig("{0}_{1}.png".format(self.basename, p["name"]))
+            plt.savefig("{0}{1}.png".format(self.basefilename, p["name"]))
         #times
         fig, ax = plt.subplots()
-        ax.set_ylabel("Time")
+        plt.title("Tempos de Execução - {0}".format(self.name))
+        ax.set_ylabel("Time(s)")
         ax.set_xlabel("k")
         for plot in plots[0:3]:
-            ax.plot(plot["dataX"], plot["dataY"], label=plot["ylabel"])
-        plt.savefig("{0}_times.png".format(self.basename))
+            ax.plot(plot["dataX"], plot["dataY"], label=plot["label"])
+        legend = ax.legend()
+        plt.savefig("{0}times.png".format(self.basefilename))
+
+        fig, ax = plt.subplots()
+        plt.title("Índices - {0}".format(self.name))
+        ax.set_ylabel("Vlr. Índice")
+        ax.set_xlabel("k")
+        for plot in plots[3:6]:
+            ax.plot(plot["dataX"], plot["dataY"], label=plot["label"])
+        legend = ax.legend()
+        plt.savefig("{0}ind_rand_adj.png".format(self.basefilename))
 
 class Stat:
     beginCreationTime = None
