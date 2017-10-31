@@ -5,7 +5,6 @@ from textdict import TextDict
 from pca import PlotPCA
 import matplotlib.pyplot as plt
 from sklearn import metrics, cluster, datasets, mixture
-from sklearn.cluster import KMeans
 import numpy as np
 from util import mkdir
 from sklearn.metrics.pairwise import pairwise_distances
@@ -34,7 +33,7 @@ def GaussianMixture(k):
 def Kmedia(k):
     print("Criando Modelo com Kmedia e k="+str(k))
     t0 = time.time()
-    model = KMeans(n_clusters=k, max_iter=1000)    
+    model = cluster.KMeans(n_clusters=k, max_iter=1000)    
     model.title = "KMeans_k{}".format(k)
     model.name = "KMeans"
     model.beginCreationTime = t0
@@ -87,7 +86,7 @@ def SpectralClustering(k):
 def DBSCAN():
     print("Criando Modelo com SpectralClustering")  
     t0 = time.time()  
-    model = cluster.DBSCAN(eps=.3)
+    model = cluster.DBSCAN(eps=4, min_samples = 100)
     model.title = "DBSCAN"
     model.name = "DBSCAN"
     model.beginCreationTime = t0

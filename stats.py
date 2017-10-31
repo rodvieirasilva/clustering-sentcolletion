@@ -190,7 +190,7 @@ class Stat:
         sum_distances = 0
         n = len(labels)
         for idx, item in enumerate(cluster_centers):
-            sum_distances += sum(metrics.pairwise.pairwise_distances(np.array(data)[labels == idx], np.array(item).reshape(1, -1), metric='euclidean'))
+            sum_distances += sum(metrics.pairwise.pairwise_distances(np.array(data)[labels == clusters[idx]], np.array(item).reshape(1, -1), metric='euclidean'))
         
         return (float(sum_distances)/n)**(0.5)
 
