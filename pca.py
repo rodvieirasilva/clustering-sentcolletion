@@ -97,6 +97,7 @@ class PlotPCA:
     def savefig(self, filename):
         #plt.rcParams["figure.figsize"] = (20,3)
         plt.savefig(filename)
+        plt.clf()
 
 def main():
    

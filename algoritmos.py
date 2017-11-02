@@ -17,7 +17,8 @@ import matplotlib.pyplot as plt
 def plotpca(pca, algoritmo, title, data, Y, stat):
     pca.plotpca(title, data, Y, set(Y))
     #plt.figtext(.02, .02, stat.toStringChart())
-    pca.savefig("{0}/{1}.png".format(algoritmo, title), ) 
+    pca.savefig("{0}/{1}.png".format(algoritmo, title)) 
+
     #plt.show()   
 
 def GaussianMixture(k):    
@@ -209,7 +210,7 @@ def menu():
     print('10 - Aplicar AgglomerativeClustering')
     print('11 - Aplicar DBSCAN')
     print('12 - Aplicar Birch')
-    print('13 - Mostrar Gráficos Gerados')
+    #print('13 - Mostrar Gráficos Gerados')
     print('14 - Run All k=[2..50]')
     print('-1 - Sair')
     opcao = input('Opção: ')
@@ -219,7 +220,7 @@ def inputK():
     k = input('Informe o Número de K ou informe 0 para Executar com varios valores para K: ')
     k = int(k)
     if k == 0:
-        return range(2, 10)
+        return range(2, 5)
     return [k]
 
 def runAvaliaSalvaResultado(models, bagofwords, processed, complete, statList, pca):

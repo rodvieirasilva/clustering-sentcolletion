@@ -141,15 +141,16 @@ class StatList(list):
             plt.title(p["title"])
             plt.ylabel(p["ylabel"])
             plt.xlabel(p["xlabel"])
-            plt.plot(p["dataX"], p["dataY"])
+            plt.plot(p["dataX"], p["dataY"], marker='o', linestyle='--')
             plt.savefig("{0}{1}.png".format(self.basefilename, p["name"]))
         #times
         fig, ax = plt.subplots()
         plt.title("Tempos de Execução - {0}".format(self.name))
         ax.set_ylabel("Time(s)")
         ax.set_xlabel("k")
-        for plot in plots[0:3]:
-            ax.plot(plot["dataX"], plot["dataY"], label=plot["label"])
+        for p in plots[0:3]:
+            plt.plot(p["dataX"], p["dataY"], marker='o', linestyle='--', label=p["label"])
+            
         legend = ax.legend()
         plt.savefig("{0}times.png".format(self.basefilename))
 
@@ -157,8 +158,8 @@ class StatList(list):
         plt.title("Índices - {0}".format(self.name))
         ax.set_ylabel("Vlr. Índice")
         ax.set_xlabel("k")
-        for plot in plots[3:6]:
-            ax.plot(plot["dataX"], plot["dataY"], label=plot["label"])
+        for p in plots[3:6]:
+            plt.plot(p["dataX"], p["dataY"], marker='o', linestyle='--', label=p["label"])
         legend = ax.legend()
         plt.savefig("{0}ind_rand_adj.png".format(self.basefilename))
 
@@ -166,10 +167,12 @@ class StatList(list):
         plt.title("Índices - {0}".format(self.name))
         ax.set_ylabel("Vlr. Índice")
         ax.set_xlabel("k")
-        for plot in plots[8:10]:
-            ax.plot(plot["dataX"], plot["dataY"], label=plot["label"])
+        for p in plots[8:10]:
+            plt.plot(p["dataX"], p["dataY"], marker='o', linestyle='--', label=p["label"])
         legend = ax.legend()
         plt.savefig("{0}ind_connectivity.png".format(self.basefilename))
+        plt.clf()
+        plt.close("all")
 
 class Stat:
     beginCreationTime = None
@@ -189,6 +192,7 @@ class Stat:
     classe = None
     themeclasse = None
     k = None
+    countClusters=None
 
     def __init__(self, k, theme, classe, themeclasse, data, A):
         self.theme = theme
@@ -216,6 +220,8 @@ class Stat:
             self.index_intracluster_variance_ = self.index_intracluster_variance(labels)
         except:
             pass
+        unique, counts = np.unique(labels, return_counts=True)
+        self.countClusters = dict(zip(unique, counts))
 
     def index_intracluster_variance(self, labels):
 
@@ -259,7 +265,12 @@ class Stat:
         strstats += '"Indice Variancia Intra-cluster";"{0}"\n'.format(self.index_intracluster_variance_)
         strstats += '"Indice Conectividade 3 vizinhos";"{0}"\n'.format(self.index_connectivity_3)
         strstats += '"Indice Conectividade 5 vizinhos";"{0}"\n'.format(self.index_connectivity_5)
-
+        strstats += '"Quantidade por cluster";\n'
+        for cluster, count in self.countClusters.items():
+            strstats += '"{0}";'.format(cluster)
+        strstats += "\n"
+        for cluster, count in self.countClusters.items():
+            strstats += '"{0}";'.format(count)
         return strstats
 
     def toStringChart(self):
@@ -273,6 +284,10 @@ class Stat:
         strstats += "Indice Variancia Intra-cluster: {0}\n".format(self.index_intracluster_variance_)
         strstats += "Indice Conectividade 3 vizinhos: {0}\n".format(self.index_connectivity_3)
         strstats += "Indice Conectividade 5 vizinhos: {0}\n".format(self.index_connectivity_5)
+        strstats += 'Quantidade por cluster:\n'
+        for cluster, count in self.countClusters.items():
+            strstats += "{0}:{1}, ".format(cluster, count)
+        strstats = strstats[:-2]
         return strstats
 
 def main():   
