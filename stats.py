@@ -1,17 +1,23 @@
 from sklearn import metrics
 import matplotlib.pyplot as plt
 import numpy as np
+from sklearn.neighbors import kneighbors_graph
 
 class StatList(list):
     name=None
     basefilename=None
-    def __init__(self, complete):
+    data=None
+    A=None
+    def __init__(self, complete, data):
         self.theme = [item['theme'] for item in complete]  
         self.classe = [item['class'] for item in complete]  
         self.themeclasse = ['{0}_{1}'.format(item['theme'], item['class']) for item in complete]
+        self.data = data
+        self.A = kneighbors_graph(data, len(data), mode='distance', include_self=True)
+        self.A = self.A.toarray()
 
     def add(self, k):
-        stat = Stat(k, self.theme, self.classe, self.themeclasse)
+        stat = Stat(k, self.theme, self.classe, self.themeclasse, self.data, self.A)
         self.append(stat)
         return stat
     
@@ -89,6 +95,24 @@ class StatList(list):
                 "xlabel": "K",
                 "dataX": [],
                 "dataY": []
+            },
+            {
+                "name": "index_connectivity",
+                "title": "Índice Conectividade - 5 vizinhos - {0}".format(self.name),
+                "label": "Índice Conectividade - 5 vizinhos",
+                "ylabel": "Vlr. Indice",
+                "xlabel": "K",
+                "dataX": [],
+                "dataY": []
+            },
+            {
+                "name": "index_connectivity",
+                "title": "Índice Conectividade - 3 vizinhos - {0}".format(self.name),
+                "label": "Índice Conectividade - 3 vizinhos",
+                "ylabel": "Vlr. Indice",
+                "xlabel": "K",
+                "dataX": [],
+                "dataY": []
             }])
 
         for stat in self:
@@ -108,6 +132,10 @@ class StatList(list):
             plots[6]["dataY"].append(stat.silhouette_score_)
             plots[7]["dataX"].append(stat.k)
             plots[7]["dataY"].append(stat.index_intracluster_variance_)
+            plots[8]["dataX"].append(stat.k)
+            plots[8]["dataY"].append(stat.index_connectivity_3)
+            plots[9]["dataX"].append(stat.k)
+            plots[9]["dataY"].append(stat.index_connectivity_5)
         for p in plots:
             plt.figure()
             plt.title(p["title"])
@@ -134,6 +162,15 @@ class StatList(list):
         legend = ax.legend()
         plt.savefig("{0}ind_rand_adj.png".format(self.basefilename))
 
+        fig, ax = plt.subplots()
+        plt.title("Índices - {0}".format(self.name))
+        ax.set_ylabel("Vlr. Índice")
+        ax.set_xlabel("k")
+        for plot in plots[8:10]:
+            ax.plot(plot["dataX"], plot["dataY"], label=plot["label"])
+        legend = ax.legend()
+        plt.savefig("{0}ind_connectivity.png".format(self.basefilename))
+
 class Stat:
     beginCreationTime = None
     endCreationTime = None
@@ -147,42 +184,46 @@ class Stat:
     adjusted_rand_score_themeclasse = None
     silhouette_score_ = None
     index_intracluster_variance_ = None
+    index_connectivity_ = None
     theme = None
     classe = None
     themeclasse = None
     k = None
 
-    def __init__(self, k, theme, classe, themeclasse):
+    def __init__(self, k, theme, classe, themeclasse, data, A):
         self.theme = theme
         self.classe = classe
         self.themeclasse = themeclasse
         self.k = k
+        self.data = data
+        self.A = A
 
-    def calc(self, data, labels):
+    def calc(self, labels):
         self.creationTime = self.endCreationTime - self.beginCreationTime
         self.executionTime = self.endExecutionTime - self.beginExecutionTime
         self.totalTime= self.creationTime + self.executionTime
         self.adjusted_rand_score_classe = metrics.adjusted_rand_score(self.classe, labels)
         self.adjusted_rand_score_theme = metrics.adjusted_rand_score(self.theme , labels)
         self.adjusted_rand_score_themeclasse = metrics.adjusted_rand_score(self.themeclasse, labels)
-
+        self.index_connectivity_3 = self.index_connectivity(labels, 3)
+        self.index_connectivity_5 = self.index_connectivity(labels, 5)
         try:
-            self.silhouette_score_ = metrics.silhouette_score(data, labels)
+            self.silhouette_score_ = metrics.silhouette_score(self.data, labels)
         except:
             pass
         
         try:
-            self.index_intracluster_variance_ = self.index_intracluster_variance(data, labels)
+            self.index_intracluster_variance_ = self.index_intracluster_variance(labels)
         except:
             pass
 
-    def index_intracluster_variance(self, data, labels):
+    def index_intracluster_variance(self, labels):
 
         # Calculo das Centroides
         clusters = np.unique(labels)
         cluster_centers = []
         for item in clusters:
-            cluster_elements = np.array(data)[labels == item]
+            cluster_elements = np.array(self.data)[labels == item]
             cluster_center = sum(cluster_elements) / len(cluster_elements)
             cluster_centers.append(cluster_center)
 
@@ -190,9 +231,22 @@ class Stat:
         sum_distances = 0
         n = len(labels)
         for idx, item in enumerate(cluster_centers):
-            sum_distances += sum(metrics.pairwise.pairwise_distances(np.array(data)[labels == clusters[idx]], np.array(item).reshape(1, -1), metric='euclidean'))
+            sum_distances += sum(metrics.pairwise.pairwise_distances(np.array(self.data)[labels == clusters[idx]], np.array(item).reshape(1, -1), metric='euclidean'))
         
         return (float(sum_distances)/n)**(0.5)
+
+    def index_connectivity(self, labels, kneighbors):
+        result = 0
+        for i,x in enumerate(self.A):
+            d = sorted(range(len(x)),key=lambda idx:x[idx])
+            cK = 1
+            for j in d:
+                if j != i and labels[i] != labels[j]:                
+                    result += 1/cK
+                    cK += cK
+                    if cK > kneighbors:
+                        break
+        return result  
 
     def toString(self):
         strstats = '"Tempo Criacao Modelo";"%.2fs"\n' % self.creationTime
@@ -203,6 +257,8 @@ class Stat:
         strstats += '"Indice Rand ajustado com relacao ao Tema+Classe";"{0}"\n'.format(self.adjusted_rand_score_themeclasse)
         strstats += '"Indice Silhueta com relacao a base inicial";"{0}"\n'.format(self.silhouette_score_)
         strstats += '"Indice Variancia Intra-cluster";"{0}"\n'.format(self.index_intracluster_variance_)
+        strstats += '"Indice Conectividade 3 vizinhos";"{0}"\n'.format(self.index_connectivity_3)
+        strstats += '"Indice Conectividade 5 vizinhos";"{0}"\n'.format(self.index_connectivity_5)
 
         return strstats
 
@@ -213,15 +269,10 @@ class Stat:
         strstats += 'Indice Rand ajustado com relacao a Classe: {0}\n'.format(self.adjusted_rand_score_classe)
         strstats += 'Indice Rand ajustado com relacao ao Tema: {0}\n'.format(self.adjusted_rand_score_theme)
         strstats += 'Indice Rand ajustado com relacao ao Tema+Classe: {0}\n'.format(self.adjusted_rand_score_themeclasse)
-        try:
-            strstats += "Indice Silhueta com relacao a base inicial: {0}\n".format(self.silhouette_score_)
-        except:
-            pass
-        
-        try:
-            strstats += "Indice Variancia Intra-cluster: {0}\n".format(self.index_intracluster_variance_)
-        except:
-            pass
+        strstats += "Indice Silhueta com relacao a base inicial: {0}\n".format(self.silhouette_score_)
+        strstats += "Indice Variancia Intra-cluster: {0}\n".format(self.index_intracluster_variance_)
+        strstats += "Indice Conectividade 3 vizinhos: {0}\n".format(self.index_connectivity_3)
+        strstats += "Indice Conectividade 5 vizinhos: {0}\n".format(self.index_connectivity_5)
         return strstats
 
 def main():   

@@ -16,8 +16,9 @@ import matplotlib.pyplot as plt
 
 def plotpca(pca, algoritmo, title, data, Y, stat):
     pca.plotpca(title, data, Y, set(Y))
-    plt.figtext(.02, .02, stat.toStringChart())
-    pca.savefig("{0}/{1}.png".format(algoritmo, title))    
+    #plt.figtext(.02, .02, stat.toStringChart())
+    pca.savefig("{0}/{1}.png".format(algoritmo, title), ) 
+    plt.show()   
 
 def GaussianMixture(k):    
     print("Criando Modelo com GaussianMixture e k="+str(k))
@@ -169,8 +170,8 @@ def AvaliaSalvaResultado(data, model, processed, complete, stats, pca=None):
     else:
         particao = model.predict(data)
     stat.endExecutionTime = time.time()
-    stat.calc(data, particao)
-    print(stat.toString())
+    stat.calc(particao)
+    print(stat.toStringChart())
     
     print("Avaliando a partição encontrada: " + model.title)
     tweets = [item['tweet'] for item in complete]    
@@ -209,6 +210,7 @@ def menu():
     print('11 - Aplicar DBSCAN')
     print('12 - Aplicar Birch')
     print('13 - Mostrar Gráficos Gerados')
+    print('14 - Run All k=[2..50]')
     print('-1 - Sair')
     opcao = input('Opção: ')
     return int(opcao)                
@@ -219,6 +221,103 @@ def inputK():
     if k == 0:
         return range(2, 10)
     return [k]
+
+def runAvaliaSalvaResultado(models, bagofwords, processed, complete, statList, pca):
+    for model in models:            
+        AvaliaSalvaResultado(model, processed, complete, statList, pca)
+    statList.plot()
+
+def runAll(complete, bagofwords, processed, pca):
+    ks = range(2, 51)
+    statList, models = KmediaKs(ks, complete)
+    runAvaliaSalvaResultado(models, bagofwords, processed, complete, statList, pca)
+    statList, models = SingleLinkKs(ks, bagofwords, complete)
+    runAvaliaSalvaResultado(models, bagofwords, processed, complete, statList, pca)
+    statList, models = GaussianMixtureKs(ks, complete)
+    runAvaliaSalvaResultado(models, bagofwords, processed, complete, statList, pca)
+    statList, models = MiniBatchKMeansKs(ks, complete)
+    runAvaliaSalvaResultado(models, bagofwords, processed, complete, statList, pca)
+    statList, models = SpectralClusteringKs(ks, complete)
+    runAvaliaSalvaResultado(models, bagofwords, processed, complete, statList, pca)    
+    statList, models = WardLinkKs(ks, bagofwords, complete)
+    runAvaliaSalvaResultado(models, bagofwords, processed, complete, statList, pca)
+    statList, models = AgglomerativeClusteringKs(ks, bagofwords, complete)
+    runAvaliaSalvaResultado(models, bagofwords, processed, complete, statList, pca)
+    statList, models = BirchKs(ks, complete)
+    runAvaliaSalvaResultado(models, bagofwords, processed, complete, statList, pca)
+
+def KmediaKs(ks, complete):
+    models = []
+    statList = StatList(complete)
+    statList.name="KMeans"
+    statList.basefilename="KMeans/stats_"
+    for k in ks:
+        models.append(Kmedia(k))
+    return statList, models
+
+def SingleLinkKs(ks, bagofwords, complete):
+    models = []
+    statList = StatList(complete)
+    statList.name="SingleLink"
+    statList.basefilename="SingleLink/stats_"
+    distance = pdist(bagofwords, metric='euclidean')
+    for k in ks:
+        models.append(singleLink(distance, k))         
+    return statList, models
+
+def GaussianMixtureKs(ks, complete):
+    models = []
+    statList = StatList(complete)
+    statList.name="GaussianMixture"
+    statList.basefilename="GaussianMixture/stats_"
+    for k in ks:
+        models.append(GaussianMixture(k))           
+    return statList, models
+
+def MiniBatchKMeansKs(ks, complete):
+    models = []
+    statList = StatList(complete)
+    statList.name="MiniBatchKMeans"
+    statList.basefilename="MiniBatchKMeans/stats_"
+    for k in ks:
+        models.append(MiniBatchKMeans(k))         
+    return statList, models
+
+def SpectralClusteringKs(ks, complete):
+    models = []
+    statList = StatList(complete)
+    statList.name="SpectralClustering"
+    statList.basefilename="SpectralClustering/stats_"
+    for k in ks:
+        models.append(SpectralClustering(k))          
+    return statList, models
+
+def WardLinkKs(ks, bagofwords, complete):  
+    models = []
+    statList = StatList(complete)
+    statList.name="WardLink"
+    statList.basefilename="WardLink/stats_"
+    for k in ks:
+        models.append(WardLink(bagofwords, k))        
+    return statList, models
+
+def AgglomerativeClusteringKs(ks, bagofwords, complete):
+    models = []
+    statList = StatList(complete)
+    statList.name="AgglomerativeClustering"
+    statList.basefilename="AgglomerativeClustering/stats_"
+    for k in ks:
+        models.append(AgglomerativeClustering(bagofwords, k))         
+    return statList, models
+
+def BirchKs(ks, complete):
+    models = []
+    statList = StatList(complete)
+    statList.name="Birch"
+    statList.basefilename="Birch/stats_"
+    for k in ks:
+        models.append(Birch(k))         
+    return statList, models
 
 def main():
     print('Started')
@@ -241,7 +340,7 @@ def main():
 
     opcao = menu()
     while(opcao != -1):
-        statList = StatList(complete)
+        statList = StatList(complete, bagofwords)
         models = []
         interval = 0
         # Aplicando o k-medias    
@@ -310,7 +409,9 @@ def main():
             for k in ks:
                 models.append(Birch(k))
         elif opcao == 13:
-            plt.show()      
+            plt.show()   
+        elif opcao == 14:
+            runAll(complete, bagofwords, processed, pca)   
         else:
             print('outro')
         

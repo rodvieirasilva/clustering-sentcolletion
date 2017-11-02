@@ -7,17 +7,69 @@ import re
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
+
 class PlotPCA:
-    basec = ["#d2006d",
-            "#0ea625",
-            "#d972fa",
-            "#d4ca3b",
-            "#015594",
-            "#ff6954",
-            "#46ddbb",
-            "#ff7bd1",
-            "#844500",
-            "#99b0ff"]
+
+        # ["#d2006d",
+    #         "#0ea625",
+    #         "#d972fa",
+    #         "#d4ca3b",
+    #         "#015594",
+    #         "#ff6954",
+    #         "#46ddbb",
+    #         "#ff7bd1",
+    #         "#844500",
+    #         "#99b0ff"]
+    basec = ["#2d9590",
+            "#da4c23",
+            "#4f62d0",
+            "#68c243",
+            "#8d47b7",
+            "#54c76a",
+            "#9c6fe8",
+            "#abbc35",
+            "#db74dc",
+            "#4b9b30",
+            "#ab3a9b",
+            "#53cc91",
+            "#e6437d",
+            "#369a5b",
+            "#d8519e",
+            "#3f7821",
+            "#8f85e1",
+            "#e4a73b",
+            "#4481d2",
+            "#e17c2e",
+            "#4cbee0",
+            "#d04133",
+            "#5dcebc",
+            "#db3750",
+            "#48a888",
+            "#ae3364",
+            "#3e7b39",
+            "#a775bb",
+            "#7a9533",
+            "#605a9c",
+            "#beaa40",
+            "#6798d1",
+            "#ae7b22",
+            "#da93cd",
+            "#6ead72",
+            "#b03939",
+            "#2c744d",
+            "#e9735b",
+            "#a9c277",
+            "#984f77",
+            "#8f9353",
+            "#de6c77",
+            "#676722",
+            "#e5869c",
+            "#caa569",
+            "#a14d55",
+            "#e3946e",
+            "#aa4e1e",
+            "#946332",
+            "#ac5b49"]
     
     def __init__(self, filename=None, data=None):
         if(filename != None):
@@ -30,19 +82,20 @@ class PlotPCA:
 
     def plotpca(self, title, words, y_pred, classnames):
         plt.figure(num=title)
-        plt.gca().set_position((.1, .4, .8, .6))
+        #plt.gca().set_position((.25, .32, .57, .57))
         plt.title(title)
         XPCA = self.pca.transform(words)
         colors = [self.basec[ (c % len(self.basec)) ] for c in y_pred]
         patches = [mpatches.Patch(color=self.basec[ (i % len(self.basec)) ], label=classn) for i,classn in enumerate(classnames)]
-        plt.legend(handles=patches)
+        #plt.legend(handles=patches)
         plt.scatter(XPCA[:, 0], XPCA[:, 1], s=30, color=colors)        
-        plt.legend()
+        #plt.legend()
 
     def show(self):
         plt.show()
 
     def savefig(self, filename):
+        #plt.rcParams["figure.figsize"] = (20,3)
         plt.savefig(filename)
 
 def main():
