@@ -18,7 +18,7 @@ def plotpca(pca, algoritmo, title, data, Y, stat):
     pca.plotpca(title, data, Y, set(Y))
     #plt.figtext(.02, .02, stat.toStringChart())
     pca.savefig("{0}/{1}.png".format(algoritmo, title), ) 
-    plt.show()   
+    #plt.show()   
 
 def GaussianMixture(k):    
     print("Criando Modelo com GaussianMixture e k="+str(k))
