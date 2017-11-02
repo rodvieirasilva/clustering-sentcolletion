@@ -96,7 +96,7 @@ class StatList(list):
                 "dataY": []
             },
             {
-                "name": "index_connectivity",
+                "name": "index_connectivity_5",
                 "title": "Índice Conectividade - 5 vizinhos - {0}".format(self.name),
                 "label": "Índice Conectividade - 5 vizinhos",
                 "ylabel": "Vlr. Indice",
@@ -105,7 +105,7 @@ class StatList(list):
                 "dataY": []
             },
             {
-                "name": "index_connectivity",
+                "name": "index_connectivity_3",
                 "title": "Índice Conectividade - 3 vizinhos - {0}".format(self.name),
                 "label": "Índice Conectividade - 3 vizinhos",
                 "ylabel": "Vlr. Indice",
@@ -142,8 +142,10 @@ class StatList(list):
             plt.xlabel(p["xlabel"])
             plt.plot(p["dataX"], p["dataY"], marker='o', linestyle='--')
             plt.savefig("{0}/stats_{1}.png".format(self.name, p["name"]))
+            plt.clf()
+            plt.close("all")
         #times
-        self.subplot("Tempos de Execução - {0}".format(self.name), "Time(s)", plots[0:3], "{0}times.png")
+        self.subplot("Tempos de Execução - {0}".format(self.name), "Time(s)", plots[0:3], "{0}times.png", 3)
         #rands
         self.subplot("Índices - {0}".format(self.name), "Vlr. Índice", plots[3:6], "{0}ind_rand_adj.png")
         #connectivity
@@ -151,14 +153,19 @@ class StatList(list):
         plt.clf()
         plt.close("all")
 
-    def subplot(self, title, ylabel, plots, filename):
+    def subplot(self, title, ylabel, plots, filename, ncols=1):
         fig, ax = plt.subplots()
         plt.title(title)
         ax.set_ylabel(ylabel)
         ax.set_xlabel("k")
         for p in plots:
             plt.plot(p["dataX"], p["dataY"], marker='o', linestyle='--', label=p["label"])
-        legend = ax.legend()
+        #legend = ax.legend()
+        if ncols==1:
+            box = ax.get_position()
+            ax.set_position([box.x0, box.y0 + box.height * 0.1,
+                 box.width, box.height * 0.9])
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),ncol=ncols)
         plt.savefig(filename.format("{0}/stats_".format(self.name)))
 
 
