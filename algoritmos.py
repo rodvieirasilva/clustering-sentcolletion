@@ -264,6 +264,7 @@ def run(algoritmos, alg, ks=None):
         statList.name = alg.__name__
         model = alg(k)
         algoritmos.avaliaSalvaResultado(model, statList)
+    statList.plot()
 
 def mainAll(algoritmos):
     opcao = menu(algoritmos.algs, 'Rodar todos com K=[2..50]')
