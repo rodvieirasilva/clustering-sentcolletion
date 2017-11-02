@@ -145,7 +145,7 @@ class StatList(list):
             plt.clf()
             plt.close("all")
         #times
-        self.subplot("Tempos de Execução - {0}".format(self.name), "Time(s)", plots[0:3], "{0}times.png", 3)
+        self.subplot("Tempos de Execução - {0}".format(self.name), "Time(s)", plots[0:3], "{0}times.png")
         #rands
         self.subplot("Índices - {0}".format(self.name), "Vlr. Índice", plots[3:6], "{0}ind_rand_adj.png")
         #connectivity
@@ -153,7 +153,7 @@ class StatList(list):
         plt.clf()
         plt.close("all")
 
-    def subplot(self, title, ylabel, plots, filename, ncols=1):
+    def subplot(self, title, ylabel, plots, filename):
         fig, ax = plt.subplots()
         plt.title(title)
         ax.set_ylabel(ylabel)
@@ -161,11 +161,11 @@ class StatList(list):
         for p in plots:
             plt.plot(p["dataX"], p["dataY"], marker='o', linestyle='--', label=p["label"])
         #legend = ax.legend()
-        if ncols==1:
-            box = ax.get_position()
-            ax.set_position([box.x0, box.y0 + box.height * 0.1,
-                 box.width, box.height * 0.9])
-        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),ncol=ncols)
+        box = ax.get_position()
+        ax.set_position([box.x0, box.y0 + box.height * 0.16,
+                box.width, box.height * 0.84])
+        
+        ax.legend(loc='upper center', shadow=False, bbox_to_anchor=(0.5, -0.12),ncol=1)
         plt.savefig(filename.format("{0}/stats_".format(self.name)))
 
 
@@ -289,6 +289,21 @@ class Stat:
         return strstats
 
 def main():   
+
+    fig, ax = plt.subplots()
+    plt.title('title')
+    ax.set_ylabel('ylabel')
+    ax.set_xlabel("k")
+    plots = [[1,2,3],[0,2,3],[2,2,3]]
+    for p in plots:
+        plt.plot(p, p, marker='o', linestyle='--', label=p[0])
+    #legend = ax.legend()
+    box = ax.get_position()
+    ax.set_position([box.x0, box.y0 + box.height * 0.16,
+            box.width, box.height * 0.84])
+    
+    ax.legend(loc='upper center', shadow=False, bbox_to_anchor=(0.5, -0.12),ncol=1)
+    plt.show()
     print("Finished")
 
 if __name__ == '__main__':
