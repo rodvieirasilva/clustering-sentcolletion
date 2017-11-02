@@ -5,7 +5,6 @@ from sklearn.neighbors import kneighbors_graph
 
 class StatList(list):
     name=None
-    basefilename=None
     data=None
     A=None
     def __init__(self, complete, data):
@@ -142,37 +141,26 @@ class StatList(list):
             plt.ylabel(p["ylabel"])
             plt.xlabel(p["xlabel"])
             plt.plot(p["dataX"], p["dataY"], marker='o', linestyle='--')
-            plt.savefig("{0}{1}.png".format(self.basefilename, p["name"]))
+            plt.savefig("{0}/stats_{1}.png".format(self.name, p["name"]))
         #times
-        fig, ax = plt.subplots()
-        plt.title("Tempos de Execução - {0}".format(self.name))
-        ax.set_ylabel("Time(s)")
-        ax.set_xlabel("k")
-        for p in plots[0:3]:
-            plt.plot(p["dataX"], p["dataY"], marker='o', linestyle='--', label=p["label"])
-            
-        legend = ax.legend()
-        plt.savefig("{0}times.png".format(self.basefilename))
-
-        fig, ax = plt.subplots()
-        plt.title("Índices - {0}".format(self.name))
-        ax.set_ylabel("Vlr. Índice")
-        ax.set_xlabel("k")
-        for p in plots[3:6]:
-            plt.plot(p["dataX"], p["dataY"], marker='o', linestyle='--', label=p["label"])
-        legend = ax.legend()
-        plt.savefig("{0}ind_rand_adj.png".format(self.basefilename))
-
-        fig, ax = plt.subplots()
-        plt.title("Índices - {0}".format(self.name))
-        ax.set_ylabel("Vlr. Índice")
-        ax.set_xlabel("k")
-        for p in plots[8:10]:
-            plt.plot(p["dataX"], p["dataY"], marker='o', linestyle='--', label=p["label"])
-        legend = ax.legend()
-        plt.savefig("{0}ind_connectivity.png".format(self.basefilename))
+        self.subplot("Tempos de Execução - {0}".format(self.name), "Time(s)", plots[0:3], "{0}times.png")
+        #rands
+        self.subplot("Índices - {0}".format(self.name), "Vlr. Índice", plots[3:6], "{0}ind_rand_adj.png")
+        #connectivity
+        self.subplot("Índices - {0}".format(self.name), "Vlr. Índice", plots[8:10], "{0}ind_connectivity.png")
         plt.clf()
         plt.close("all")
+
+    def subplot(self, title, ylabel, plots, filename):
+        fig, ax = plt.subplots()
+        plt.title(title)
+        ax.set_ylabel(ylabel)
+        ax.set_xlabel("k")
+        for p in plots:
+            plt.plot(p["dataX"], p["dataY"], marker='o', linestyle='--', label=p["label"])
+        legend = ax.legend()
+        plt.savefig(filename.format("{0}/stats_".format(self.name)))
+
 
 class Stat:
     beginCreationTime = None

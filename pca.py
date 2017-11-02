@@ -9,17 +9,7 @@ import matplotlib.patches as mpatches
 
 
 class PlotPCA:
-
-        # ["#d2006d",
-    #         "#0ea625",
-    #         "#d972fa",
-    #         "#d4ca3b",
-    #         "#015594",
-    #         "#ff6954",
-    #         "#46ddbb",
-    #         "#ff7bd1",
-    #         "#844500",
-    #         "#99b0ff"]
+    #50 cores distintas 
     basec = ["#2d9590",
             "#da4c23",
             "#4f62d0",
@@ -82,20 +72,16 @@ class PlotPCA:
 
     def plotpca(self, title, words, y_pred, classnames):
         plt.figure(num=title)
-        #plt.gca().set_position((.25, .32, .57, .57))
         plt.title(title)
         XPCA = self.pca.transform(words)
         colors = [self.basec[ (c % len(self.basec)) ] for c in y_pred]
         patches = [mpatches.Patch(color=self.basec[ (i % len(self.basec)) ], label=classn) for i,classn in enumerate(classnames)]
-        #plt.legend(handles=patches)
-        plt.scatter(XPCA[:, 0], XPCA[:, 1], s=30, color=colors)        
-        #plt.legend()
+        plt.scatter(XPCA[:, 0], XPCA[:, 1], s=30, color=colors)
 
     def show(self):
         plt.show()
 
     def savefig(self, filename):
-        #plt.rcParams["figure.figsize"] = (20,3)
         plt.savefig(filename)
         plt.clf()
 

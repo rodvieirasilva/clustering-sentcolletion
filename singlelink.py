@@ -16,11 +16,7 @@ class SingleLink:
         self.labels_ = fcluster(self.singleLinkage, self.k, criterion='maxclust')
 
 def main():
-     pass
-#     Z = linkage(X, 'single')
-#     fig = plt.figure(figsize=(25, 10))
-#     dn = dendrogram(Z)
-#     plt.show()
+    print("Finished")
 
 if __name__ == '__main__':    
     main()

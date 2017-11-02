@@ -1,4 +1,4 @@
-from algoritmos import main as algmain
+from algoritmos import main as algmenu
 from preprocess import main as premain
 
 def menu():
@@ -13,16 +13,16 @@ def menu():
     print('1 - Aplicar Pré-processamento')
     print('2 - Aplicar e Analisar algoritmos')
     print('0 - Sair')
-    return int(input('Opção: '))
+    return input('Opção: ')
 
 def main():
     opcao = menu()
-    while(opcao!=0):
-        if opcao==1:
+    while(opcao!="0"):
+        if opcao=="1":
             premain()
-        elif opcao==2:
-            algmain()
-        elif(opcao<0 or opcao>2):
+        elif opcao=="2":
+            algmenu()
+        elif(opcao!="0"):
             print("Opção Inválida!")
         opcao = menu()    
 

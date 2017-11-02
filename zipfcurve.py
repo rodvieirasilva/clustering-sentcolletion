@@ -47,7 +47,7 @@ class ZipfCurve:
             
 
 def main():
-    with open('allwordsProcessed.json') as json_data:
+    with open('basesjson/allwordsProcessed.json') as json_data:
         allwords = json.load(json_data)
         zipf = ZipfCurve(allwords)
         zipf.lunh(0.1)
