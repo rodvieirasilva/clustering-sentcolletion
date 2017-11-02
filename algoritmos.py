@@ -47,9 +47,9 @@ class Algoritmos:
         self.processed = processed  
         self.distance = pdist(data, metric='euclidean')
         self.pca = PlotPCA(data=data)
-        self.algsP = [self.KMeans, SingleLink, 
+        self.algsP = [self.KMeans, self.SingleLink, 
                      self.WardLink, self.DBSCAN]
-        self.algs = [self.KMeans, SingleLink, 
+        self.algs = [self.KMeans, self.SingleLink, 
                      self.WardLink, self.DBSCAN, self.GaussianMixture, self.SpectralClustering, 
                      self.AgglomerativeClustering, 
                      self.Birch, self.MiniBatchKMeans, self.AffinityPropagation, self.MeanShift]
@@ -261,7 +261,7 @@ def run(algoritmos, alg, ks=None):
             model = alg(k)
             algoritmos.avaliaSalvaResultado(model, statList)
     else:
-        model = alg(k)
+        model = alg()
         algoritmos.avaliaSalvaResultado(model, statList)
     statList.plot()
 
