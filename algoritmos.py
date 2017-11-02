@@ -253,15 +253,14 @@ def menu(listAlgs, adicional):
 
 def run(algoritmos, alg, ks=None):    
     statList = StatList(algoritmos.complete, algoritmos.data)
-    if alg in algoritmos.algsK:
-        statList.name = alg.__name__
+    statList.name = alg.__name__
+    if alg in algoritmos.algsK:        
         if ks is None:
             ks = inputK()
         for k in ks:
             model = alg(k)
             algoritmos.avaliaSalvaResultado(model, statList)
     else:
-        statList.name = alg.__name__
         model = alg(k)
         algoritmos.avaliaSalvaResultado(model, statList)
     statList.plot()
@@ -275,7 +274,7 @@ def mainAll(algoritmos):
         elif opcao!=0:
             alg = algoritmos.algs[opcao-1]
             run(algoritmos, alg)
-        opcao = menu()  
+        opcao = menu(algoritmos.algs, 'Rodar todos com K=[2..50]') 
 
 def main():
     algoritmos = Algoritmos()
@@ -286,7 +285,7 @@ def main():
         elif opcao!=0:
             alg = algoritmos.algsP[opcao-1]
             run(algoritmos, alg)
-        opcao = menu()    
+        opcao = menu(algoritmos.algsP, 'Outros')    
 
 if __name__ == '__main__':
     main()                
