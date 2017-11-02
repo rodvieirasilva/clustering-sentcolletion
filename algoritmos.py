@@ -46,6 +46,7 @@ class Algoritmos:
         self.data = data
         self.processed = processed  
         self.distance = pdist(data, metric='euclidean')
+        self.pca = PlotPCA(data=data)
         self.algsP = [self.KMeans, SingleLink, 
                      self.WardLink, self.DBSCAN]
         self.algs = [self.KMeans, SingleLink, 
