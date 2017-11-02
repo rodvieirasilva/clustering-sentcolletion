@@ -215,7 +215,7 @@ class Algoritmos:
         print("Salvando partição encontrada: " + model.title)
         self.savecsvParticao("{0}/{1}.csv".format(model.name, model.title), particao, stat.toString())
         print("Gerando PCA: " + model.title)
-        self.pca.plotpca(model.title, self.data, Y, set(Y))
+        self.pca.plotpca(model.title, self.data, particao, set(particao))
         self.pca.savefig("{0}/{1}.png".format(model.name, model.title)) 
 
     def savecsvParticao(self, filename, labels, strstats):
