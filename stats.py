@@ -247,11 +247,14 @@ class Stat:
             d = sorted(range(len(x)),key=lambda idx:x[idx])
             cK = 1
             for j in d:
-                if j != i and labels[i] != labels[j]:                
-                    result += 1/cK
-                    cK += cK
-                    if cK > kneighbors:
-                        break
+                if j != i:
+                    if labels[i] != labels[j]:                
+                        result += 1/cK
+
+                    cK += 1
+
+                if cK > kneighbors:
+                    break
         return result  
 
     def toString(self):
