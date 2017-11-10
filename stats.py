@@ -96,18 +96,18 @@ class StatList(list):
                 "dataY": []
             },
             {
-                "name": "index_connectivity_5",
-                "title": "Índice Conectividade - 5 vizinhos - {0}".format(self.name),
-                "label": "Índice Conectividade - 5 vizinhos",
+                "name": "index_connectivity_28",
+                "title": "Índice Conectividade - 28 vizinhos - {0}".format(self.name),
+                "label": "Índice Conectividade - 28 vizinhos",
                 "ylabel": "Vlr. Indice",
                 "xlabel": "K",
                 "dataX": [],
                 "dataY": []
             },
             {
-                "name": "index_connectivity_3",
-                "title": "Índice Conectividade - 3 vizinhos - {0}".format(self.name),
-                "label": "Índice Conectividade - 3 vizinhos",
+                "name": "index_connectivity_10",
+                "title": "Índice Conectividade - 10 vizinhos - {0}".format(self.name),
+                "label": "Índice Conectividade - 10 vizinhos",
                 "ylabel": "Vlr. Indice",
                 "xlabel": "K",
                 "dataX": [],
@@ -132,9 +132,9 @@ class StatList(list):
             plots[7]["dataX"].append(stat.k)
             plots[7]["dataY"].append(stat.index_intracluster_variance_)
             plots[8]["dataX"].append(stat.k)
-            plots[8]["dataY"].append(stat.index_connectivity_3)
+            plots[8]["dataY"].append(stat.index_connectivity_10)
             plots[9]["dataX"].append(stat.k)
-            plots[9]["dataY"].append(stat.index_connectivity_5)
+            plots[9]["dataY"].append(stat.index_connectivity_28)
         for p in plots:
             plt.figure()
             plt.title(p["title"])
@@ -204,8 +204,8 @@ class Stat:
         self.adjusted_rand_score_classe = metrics.adjusted_rand_score(self.classe, labels)
         self.adjusted_rand_score_theme = metrics.adjusted_rand_score(self.theme , labels)
         self.adjusted_rand_score_themeclasse = metrics.adjusted_rand_score(self.themeclasse, labels)
-        self.index_connectivity_3 = self.index_connectivity(labels, 3)
-        self.index_connectivity_5 = self.index_connectivity(labels, 5)
+        self.index_connectivity_10 = self.index_connectivity(labels, 10)
+        self.index_connectivity_28 = self.index_connectivity(labels, 28)
         try:
             self.silhouette_score_ = metrics.silhouette_score(self.data, labels)
         except:
@@ -261,8 +261,8 @@ class Stat:
         strstats += '"Indice Rand ajustado com relacao ao Tema+Classe";"{0}"\n'.format(self.adjusted_rand_score_themeclasse)
         strstats += '"Indice Silhueta com relacao a base inicial";"{0}"\n'.format(self.silhouette_score_)
         strstats += '"Indice Variancia Intra-cluster";"{0}"\n'.format(self.index_intracluster_variance_)
-        strstats += '"Indice Conectividade 3 vizinhos";"{0}"\n'.format(self.index_connectivity_3)
-        strstats += '"Indice Conectividade 5 vizinhos";"{0}"\n'.format(self.index_connectivity_5)
+        strstats += '"Indice Conectividade 10 vizinhos";"{0}"\n'.format(self.index_connectivity_10)
+        strstats += '"Indice Conectividade 28 vizinhos";"{0}"\n'.format(self.index_connectivity_28)
         strstats += '"Quantidade por cluster";\n'
         for cluster, count in self.countClusters.items():
             strstats += '"{0}";'.format(cluster)
@@ -280,8 +280,8 @@ class Stat:
         strstats += 'Indice Rand ajustado com relacao ao Tema+Classe: {0}\n'.format(self.adjusted_rand_score_themeclasse)
         strstats += "Indice Silhueta com relacao a base inicial: {0}\n".format(self.silhouette_score_)
         strstats += "Indice Variancia Intra-cluster: {0}\n".format(self.index_intracluster_variance_)
-        strstats += "Indice Conectividade 3 vizinhos: {0}\n".format(self.index_connectivity_3)
-        strstats += "Indice Conectividade 5 vizinhos: {0}\n".format(self.index_connectivity_5)
+        strstats += "Indice Conectividade 10 vizinhos: {0}\n".format(self.index_connectivity_10)
+        strstats += "Indice Conectividade 28 vizinhos: {0}\n".format(self.index_connectivity_28)
         strstats += 'Quantidade por cluster:\n'
         for cluster, count in self.countClusters.items():
             strstats += "{0}:{1}, ".format(cluster, count)

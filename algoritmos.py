@@ -237,7 +237,7 @@ class Algoritmos:
 def inputK():
     k = inputInt('Informe o Número de K ou informe 0 para Executar K = [2...10]: ')
     if k == 0:
-        return range(2, 11)
+        return range(2, 51)
     return [k]
 
 def menu(listAlgs, adicional):    
