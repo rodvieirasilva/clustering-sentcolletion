@@ -255,19 +255,24 @@ def menu(listAlgs, adicional):
     print('0 - Sair')
     return inputInt('Opção: ', i)
 
-def run(algoritmos, alg, ks=None):    
-    statList = StatList(algoritmos.complete, algoritmos.data)
-    statList.name = alg.__name__
-    if alg in algoritmos.algsK:        
-        if ks is None:
-            ks = inputK()
-        for k in ks:
-            model = alg(k)
+def run(algoritmos, alg, ks=None):   
+    try:
+        statList = StatList(algoritmos.complete, algoritmos.data)
+        statList.name = alg.__name__
+        statList.prefix = ''
+        if alg in algoritmos.algsK:        
+            if ks is None:
+                ks = inputK()
+            statList.prefix = 'K{0}-{1}'.format(min(ks), max(ks))
+            for k in ks:
+                model = alg(k)
+                algoritmos.avaliaSalvaResultado(model, statList)
+        else:
+            model = alg()
             algoritmos.avaliaSalvaResultado(model, statList)
-    else:
-        model = alg()
-        algoritmos.avaliaSalvaResultado(model, statList)
-    statList.plot()
+        statList.plot()
+    except e:
+        print('Erro ao rodar alg.: ' + str(e))
 
 def mainAll(algoritmos):
     opcao = menu(algoritmos.algs, 'Rodar todos com K=[2..50]')

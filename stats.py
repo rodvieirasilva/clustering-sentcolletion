@@ -7,6 +7,7 @@ class StatList(list):
     name=None
     data=None
     A=None
+    prefix=None
     def __init__(self, complete, data):
         self.theme = [item['theme'] for item in complete]  
         self.classe = [item['class'] for item in complete]  
@@ -166,7 +167,7 @@ class StatList(list):
                 box.width, box.height * 0.84])
         
         ax.legend(loc='upper center', shadow=False, bbox_to_anchor=(0.5, -0.12),ncol=1)
-        plt.savefig(filename.format("{0}/stats_".format(self.name)))
+        plt.savefig(filename.format("{0}/{1}_stats_".format(self.name, self.prefix)))
 
 
 class Stat:
