@@ -8,7 +8,7 @@ from sklearn import metrics, cluster, datasets, mixture
 import numpy as np
 from util import mkdir, inputInt, printGreen, printRed, save
 from scipy.spatial.distance  import pdist
-from singlelink import SingleLink
+from simplelinkage import SimpleLinkage
 from sklearn.neighbors import kneighbors_graph
 from stats import StatList
 from simplewordcloud import SimpleWordCloud
@@ -74,7 +74,7 @@ class Algoritmos:
     def SingleLink(self, k):
         print("Criando Modelo com SingleLink e k="+str(k))
         t0 = time.time()
-        model = SingleLink(self.distance, k) 
+        model = SimpleLinkage(self.distance, k, 'single') 
         model.title = "SingleLink_k{}".format(k)
         model.name = "SingleLink"
         model.beginCreationTime = t0
@@ -84,15 +84,22 @@ class Algoritmos:
 
     def WardLink(self, k):
         print("Criando Modelo com WardLink e k="+str(k))
+        # t0 = time.time()
+        # # connectivity matrix for structured Ward
+        # connectivity = kneighbors_graph(
+        #     self.data, n_neighbors=k, include_self=False)
+        # # make connectivity symmetric
+        # connectivity = 0.5 * (connectivity + connectivity.T)  
+        # model = cluster.AgglomerativeClustering(
+        #     n_clusters=k, linkage='ward',
+        #     connectivity=connectivity)
+        # model.title = "WardLink_k{}".format(k)
+        # model.name = "WardLink"
+        # model.beginCreationTime = t0
+        # model.endCreationTime = time.time()
+        # model.k = k
         t0 = time.time()
-        # connectivity matrix for structured Ward
-        connectivity = kneighbors_graph(
-            self.data, n_neighbors=k, include_self=False)
-        # make connectivity symmetric
-        connectivity = 0.5 * (connectivity + connectivity.T)  
-        model = cluster.AgglomerativeClustering(
-            n_clusters=k, linkage='ward',
-            connectivity=connectivity)
+        model = SimpleLinkage(self.distance, k, 'ward') 
         model.title = "WardLink_k{}".format(k)
         model.name = "WardLink"
         model.beginCreationTime = t0
