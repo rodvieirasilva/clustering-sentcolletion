@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 from sklearn import metrics, cluster, datasets, mixture
 import numpy as np
 from util import mkdir, inputInt, printGreen, printRed, save
-from sklearn.metrics.pairwise import pairwise_distances
 from scipy.spatial.distance  import pdist
 from singlelink import SingleLink
 from sklearn.neighbors import kneighbors_graph
