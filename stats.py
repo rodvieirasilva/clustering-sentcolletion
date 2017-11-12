@@ -142,7 +142,7 @@ class StatList(list):
             plt.ylabel(p["ylabel"])
             plt.xlabel(p["xlabel"])
             plt.plot(p["dataX"], p["dataY"], marker='o', linestyle='--')
-            plt.savefig("{0}/stats_{1}.png".format(self.name, p["name"]))
+            plt.savefig("{0}/{1}_stats_{2}.png".format(self.name, self.prefix, p["name"]))
             plt.clf()
             plt.close("all")
         #times
