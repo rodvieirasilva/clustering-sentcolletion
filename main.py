@@ -4,7 +4,6 @@ from preprocess import main as premain
 def menu():
     print("-- Sent Collection v.1 para análise de agrupamento --")
     print("--                  Grupo 1                        --")
-    print("--Danilo Kaory Yamauti                             --")
     print("--Marciele de Menezes Bittencourt                  --")
     print("--Rodrigo Vieira da Silva                          --")
     print("--Washington Rodrigo Dias da Silva                 --")

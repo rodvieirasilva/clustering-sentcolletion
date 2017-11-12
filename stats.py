@@ -289,7 +289,10 @@ class Stat:
         return strstats
 
 def main():   
+    teste1()
+    print("Finished")
 
+def teste1():
     fig, ax = plt.subplots()
     plt.title('title')
     ax.set_ylabel('ylabel')
@@ -303,8 +306,7 @@ def main():
             box.width, box.height * 0.84])
     
     ax.legend(loc='upper center', shadow=False, bbox_to_anchor=(0.5, -0.12),ncol=1)
-    plt.show()
-    print("Finished")
+    plt.show()    
 
 if __name__ == '__main__':
     main()

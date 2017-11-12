@@ -6,12 +6,13 @@ from pca import PlotPCA
 import matplotlib.pyplot as plt
 from sklearn import metrics, cluster, datasets, mixture
 import numpy as np
-from util import mkdir, inputInt, printGreen, printRed
+from util import mkdir, inputInt, printGreen, printRed, save
 from sklearn.metrics.pairwise import pairwise_distances
 from scipy.spatial.distance  import pdist
 from singlelink import SingleLink
 from sklearn.neighbors import kneighbors_graph
 from stats import StatList
+from simplewordcloud import SimpleWordCloud
 import matplotlib.pyplot as plt
 
 class Algoritmos:
@@ -21,6 +22,7 @@ class Algoritmos:
     distance=None
     algs=None
     algsK=None
+    wordCloud = SimpleWordCloud()
 
     def __init__(self, data=None, complete=None, processed=None):
 
@@ -216,7 +218,9 @@ class Algoritmos:
         self.savecsvParticao("{0}/{1}.csv".format(model.name, model.title), particao, stat.toString())
         print("Gerando PCA: " + model.title)
         self.pca.plotpca(model.title, self.data, particao, set(particao))
-        self.pca.savefig("{0}/{1}.png".format(model.name, model.title)) 
+        self.pca.savefig("{0}/{1}.png".format(model.name, model.title))
+        self.wordCloud.plotLabels(self.processed, particao, model.name, model.title)
+        save("{0}/{1}.json".format(model.name, model.title), particao.tolist())
 
     def savecsvParticao(self, filename, labels, strstats):
         tweets = [item['tweet'] for item in self.complete]  
@@ -235,7 +239,7 @@ class Algoritmos:
                 file.write('\n')
 
 def inputK():
-    k = inputInt('Informe o Número de K ou informe 0 para Executar K = [2...10]: ')
+    k = inputInt('Informe o Número de K ou informe 0 para Executar K = [2...50]: ')
     if k == 0:
         return range(2, 51)
     return [k]
