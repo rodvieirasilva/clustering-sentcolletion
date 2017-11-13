@@ -61,25 +61,7 @@ class Algoritmos:
                      self.Birch, self.MiniBatchKMeans ]
         self.algsDend = [self.SingleLink, 
                      self.WardLink]
-
-    def ElbowMethod(self):
-        distortions = []
-        print('\nGerando gráfico de distorção para o algoritmo K-Means')
-        
-        for i in range (1, 51):
-            km_model = cluster.KMeans(n_clusters=i)
-            km_model.fit(self.data)
-            distortions.append(km_model.inertia_)
-            
-        plt.plot(range(1, 51), distortions, marker='o')
-        plt.xlabel('Número de clusters')
-        plt.ylabel('Distorção')
-        plt.title('Método do cotovelo')
-        plt.show()
-        plt.savefig('KMeans/ElbowMethod.png')
-        
-        print()
-    
+   
     def KMeans(self, k):
         print("Criando Modelo com KMeans e k="+str(k))
         t0 = time.time()
@@ -104,20 +86,6 @@ class Algoritmos:
 
     def WardLink(self, k):
         print("Criando Modelo com WardLink e k="+str(k))
-        # t0 = time.time()
-        # # connectivity matrix for structured Ward
-        # connectivity = kneighbors_graph(
-        #     self.data, n_neighbors=k, include_self=False)
-        # # make connectivity symmetric
-        # connectivity = 0.5 * (connectivity + connectivity.T)  
-        # model = cluster.AgglomerativeClustering(
-        #     n_clusters=k, linkage='ward',
-        #     connectivity=connectivity)
-        # model.title = "WardLink_k{}".format(k)
-        # model.name = "WardLink"
-        # model.beginCreationTime = t0
-        # model.endCreationTime = time.time()
-        # model.k = k
         t0 = time.time()
         model = SimpleLinkage(self.distance, k, 'ward') 
         model.title = "WardLink_k{}".format(k)
@@ -232,6 +200,11 @@ class Algoritmos:
         stat.endCreationTime = model.endCreationTime    
         stat.beginExecutionTime = time.time()    
         model.fit(self.data)
+        if hasattr(model, 'inertia_'):
+            stat.inertia = model.inertia_
+        else:
+            stat.inertia = 0
+
         if hasattr(model, 'labels_'):
             particao = model.labels_
         else:
@@ -322,8 +295,6 @@ def main():
         if opcao>len(algoritmos.algsP):
             mainAll(algoritmos)
         elif opcao!=0:
-            if opcao == 1:
-                algoritmos.ElbowMethod()
             alg = algoritmos.algsP[opcao-1]
             run(algoritmos, alg)
         opcao = menu(algoritmos.algsP, 'Outros')    

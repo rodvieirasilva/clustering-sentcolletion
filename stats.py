@@ -113,6 +113,15 @@ class StatList(list):
                 "xlabel": "K",
                 "dataX": [],
                 "dataY": []
+            },
+            {
+                "name": "elbow_method",
+                "title": "Método do cotovelo - {0}".format(self.name),
+                "label": "Distorção",
+                "ylabel": "Distorção",
+                "xlabel": "K",
+                "dataX": [],
+                "dataY": []
             }])
 
         for stat in self:
@@ -136,6 +145,9 @@ class StatList(list):
             plots[8]["dataY"].append(stat.index_connectivity_10)
             plots[9]["dataX"].append(stat.k)
             plots[9]["dataY"].append(stat.index_connectivity_28)
+            plots[10]["dataX"].append(stat.k)
+            plots[10]["dataY"].append(stat.inertia)
+
         for p in plots:
             plt.figure()
             plt.title(p["title"])
@@ -168,8 +180,7 @@ class StatList(list):
         
         ax.legend(loc='upper center', shadow=False, bbox_to_anchor=(0.5, -0.12),ncol=1)
         plt.savefig(filename.format("{0}/{1}_stats_".format(self.name, self.prefix)))
-
-
+    
 class Stat:
     beginCreationTime = None
     endCreationTime = None
@@ -189,6 +200,7 @@ class Stat:
     themeclasse = None
     k = None
     countClusters=None
+    inertia=None
 
     def __init__(self, k, theme, classe, themeclasse, data, A):
         self.theme = theme
