@@ -121,7 +121,6 @@ class Algoritmos:
         return model
 
     def DBSCAN(self, eps, min_samples):
-        min_samples = min_samples * 10
         print("Criando Modelo com DBSCAN eps = {0} min_samples {1}".format(eps, min_samples))  
         t0 = time.time()  
         model = cluster.DBSCAN(eps=eps, min_samples = min_samples)
@@ -250,15 +249,15 @@ def inputK():
     return [k]
 
 def inputEps():
-    eps = inputInt('Informe o raio eps ou informe 0 para Executar K = [1...5]: ')
+    eps = inputInt('Informe o raio eps ou informe 0 para Executar eps = [1...5]: ')
     if eps == 0:
         return range(1, 6)
     return [eps]
 
 def inputMinSamples():
-    min_samples = inputInt('Informe a quantidade de minima de vizinhos min_samples ou informe 0 para Executar K = [10...200]: ')
+    min_samples = inputInt('Informe a quantidade de minima de vizinhos min_samples ou informe 0 para Executar min_samples = [10...200]: ')
     if min_samples == 0:
-        return range(1, 20)
+        return range(10, 210, 10)
     return [min_samples]
 
 
@@ -312,7 +311,7 @@ def mainAll(algoritmos):
     while(opcao!=0):
         if opcao>len(algoritmos.algs):
             for alg in algoritmos.algs:
-                run(algoritmos, alg, range(2,51), range(1,6), range(1,20))
+                run(algoritmos, alg, range(2,51), range(1,6), range(10, 210, 10))
         elif opcao!=0:
             alg = algoritmos.algs[opcao-1]
             run(algoritmos, alg)
