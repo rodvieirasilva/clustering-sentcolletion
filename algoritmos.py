@@ -62,6 +62,24 @@ class Algoritmos:
         self.algsDend = [self.SingleLink, 
                      self.WardLink]
 
+    def ElbowMethod(self):
+        distortions = []
+        print('\nGerando gráfico de distorção para o algoritmo K-Means')
+        
+        for i in range (1, 51):
+            km_model = cluster.KMeans(n_clusters=i)
+            km_model.fit(self.data)
+            distortions.append(km_model.inertia_)
+            
+        plt.plot(range(1, 51), distortions, marker='o')
+        plt.xlabel('Número de clusters')
+        plt.ylabel('Distorção')
+        plt.title('Método do cotovelo')
+        plt.show()
+        plt.savefig('KMeans/ElbowMethod.png')
+        
+        print()
+    
     def KMeans(self, k):
         print("Criando Modelo com KMeans e k="+str(k))
         t0 = time.time()
@@ -304,6 +322,8 @@ def main():
         if opcao>len(algoritmos.algsP):
             mainAll(algoritmos)
         elif opcao!=0:
+            if opcao == 1:
+                algoritmos.ElbowMethod()
             alg = algoritmos.algsP[opcao-1]
             run(algoritmos, alg)
         opcao = menu(algoritmos.algsP, 'Outros')    
