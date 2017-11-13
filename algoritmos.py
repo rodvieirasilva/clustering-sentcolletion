@@ -48,10 +48,10 @@ class Algoritmos:
         self.processed = processed  
         self.distance = pdist(data, metric='euclidean')
         self.pca = PlotPCA(data=data)
-        self.algsP = [self.DBSCAN, self.KMeans, self.SingleLink, 
-                     self.WardLink ]
-        self.algs = [self.DBSCAN,self.KMeans, self.SingleLink, 
-                     self.WardLink,  self.GaussianMixture, self.SpectralClustering, 
+        self.algsP = [self.KMeans, self.SingleLink, 
+                     self.WardLink, self.DBSCAN]
+        self.algs = [self.KMeans, self.SingleLink, 
+                     self.WardLink, self.DBSCAN, self.GaussianMixture, self.SpectralClustering, 
                      self.AgglomerativeClustering, 
                      self.Birch, self.MiniBatchKMeans, self.AffinityPropagation, self.MeanShift]
         self.algsK = [self.KMeans, self.SingleLink, 
