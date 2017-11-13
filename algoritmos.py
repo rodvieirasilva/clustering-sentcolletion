@@ -125,7 +125,7 @@ class Algoritmos:
         print("Criando Modelo com DBSCAN eps = {0} min_samples {1}".format(eps, min_samples))  
         t0 = time.time()  
         model = cluster.DBSCAN(eps=eps, min_samples = min_samples)
-        model.title = "DBSCAN_eps_{0}min_samples_{1}".format(eps, min_samples)
+        model.title = "DBSCAN_eps_{0}_min_samples_{1}".format(eps, min_samples)
         model.name = "DBSCAN"
         model.beginCreationTime = t0
         model.endCreationTime = time.time()
