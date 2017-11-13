@@ -59,6 +59,8 @@ class Algoritmos:
                      self.WardLink, self.SpectralClustering,
                      self.AgglomerativeClustering, 
                      self.Birch, self.MiniBatchKMeans ]
+        self.algsDend = [self.SingleLink, 
+                     self.WardLink]
 
     def KMeans(self, k):
         print("Criando Modelo com KMeans e k="+str(k))
@@ -216,6 +218,10 @@ class Algoritmos:
             particao = model.labels_
         else:
             particao = model.predict(self.data)
+        
+        if hasattr(model, 'dendrogram'):
+            model.dendrogram()
+            
         stat.endExecutionTime = time.time()
         print("Avaliando a partição encontrada: " + model.title)
         stat.calc(particao)
@@ -277,7 +283,7 @@ def run(algoritmos, alg, ks=None):
             model = alg()
             algoritmos.avaliaSalvaResultado(model, statList)
         statList.plot()
-    except e:
+    except Exception as e:
         print('Erro ao rodar alg.: ' + str(e))
 
 def mainAll(algoritmos):

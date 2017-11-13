@@ -15,6 +15,7 @@ class SimpleLinkage:
     def __init__(self, distance, k, alg):
         self.k =  k
         self.distance = distance
+        self.alg = alg
 
     def fit(self, data):        
         self.singleLinkage = linkage(self.distance, self.alg)        
