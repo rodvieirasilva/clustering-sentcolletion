@@ -59,6 +59,7 @@ class Algoritmos:
                      self.WardLink, self.SpectralClustering,
                      self.AgglomerativeClustering, 
                      self.Birch, self.MiniBatchKMeans ]
+        self.algsEpsMinSamples = [self.DBSCAN]
         self.algsDend = [self.SingleLink, 
                      self.WardLink]
    
@@ -119,11 +120,12 @@ class Algoritmos:
         model.k = k
         return model
 
-    def DBSCAN(self):
-        print("Criando Modelo com SpectralClustering")  
+    def DBSCAN(self, eps, min_samples):
+        min_samples = min_samples * 10
+        print("Criando Modelo com DBSCAN eps = {0} min_samples {1}".format(eps, min_samples))  
         t0 = time.time()  
-        model = cluster.DBSCAN(eps=4, min_samples = 100)
-        model.title = "DBSCAN"
+        model = cluster.DBSCAN(eps=eps, min_samples = min_samples)
+        model.title = "DBSCAN_eps_{0}min_samples_{1}".format(eps, min_samples)
         model.name = "DBSCAN"
         model.beginCreationTime = t0
         model.endCreationTime = time.time()
@@ -247,6 +249,19 @@ def inputK():
         return range(2, 51)
     return [k]
 
+def inputEps():
+    eps = inputInt('Informe o raio eps ou informe 0 para Executar K = [1...5]: ')
+    if eps == 0:
+        return range(1, 6)
+    return [eps]
+
+def inputMinSamples():
+    min_samples = inputInt('Informe a quantidade de minima de vizinhos min_samples ou informe 0 para Executar K = [10...200]: ')
+    if min_samples == 0:
+        return range(1, 20)
+    return [min_samples]
+
+
 def menu(listAlgs, adicional):    
     print('Escolha uma das opções: ')
     i=0
@@ -258,11 +273,12 @@ def menu(listAlgs, adicional):
     print('0 - Sair')
     return inputInt('Opção: ', i)
 
-def run(algoritmos, alg, ks=None):   
+def run(algoritmos, alg, ks=None, epsi=None, min_samples=None):   
     try:
         statList = StatList(algoritmos.complete, algoritmos.data)
         statList.name = alg.__name__
         statList.prefix = ''
+
         if alg in algoritmos.algsK:        
             if ks is None:
                 ks = inputK()
@@ -270,6 +286,20 @@ def run(algoritmos, alg, ks=None):
             for k in ks:
                 model = alg(k)
                 algoritmos.avaliaSalvaResultado(model, statList)
+
+        elif alg in algoritmos.algsEpsMinSamples:
+            if epsi is None:
+                epsi = inputEps()
+
+            if min_samples is None:
+                min_samples = inputMinSamples()
+
+            statList.prefix = 'Eps{0}-{1} min_samples{2}-{3}'.format(min(epsi), max(epsi), min(min_samples), max(min_samples))
+
+            for eps in epsi:
+                for min_sample in min_samples:
+                    model = alg(eps, min_sample)
+                    algoritmos.avaliaSalvaResultado(model, statList)
         else:
             model = alg()
             algoritmos.avaliaSalvaResultado(model, statList)
@@ -282,7 +312,7 @@ def mainAll(algoritmos):
     while(opcao!=0):
         if opcao>len(algoritmos.algs):
             for alg in algoritmos.algs:
-                run(algoritmos, alg, range(2,51))
+                run(algoritmos, alg, range(2,51), range(1,6), range(1,20))
         elif opcao!=0:
             alg = algoritmos.algs[opcao-1]
             run(algoritmos, alg)
