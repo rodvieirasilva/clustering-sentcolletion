@@ -19,6 +19,8 @@ class SimpleWordCloud:
             from wordcloud import WordCloud #--> Módulo wordcloud
             self.wordcloud = WordCloud(width=1024, height=768, background_color="white", stopwords=[], collocations=False).generate(allText)
             self.wordcloud.to_file(filename)
+            plt.clf()
+            plt.close("all")            
             
         except Exception as e:
             print("WordCloud não suportado, Error: " + str(e))
