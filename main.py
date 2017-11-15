@@ -1,3 +1,12 @@
+"""
+-- Sent Collection v.1 para análise de agrupamento --
+--                  Grupo 1                        --
+--Marciele de Menezes Bittencourt                  --
+--Rodrigo Vieira da Silva                          --
+--Washington Rodrigo Dias da Silva                 --
+-----------------------------------------------------
+"""
+
 from algoritmos import main as algmenu
 from preprocess import main as premain
 

@@ -1,3 +1,11 @@
+"""
+-- Sent Collection v.1 para análise de agrupamento --
+--                  Grupo 1                        --
+--Marciele de Menezes Bittencourt                  --
+--Rodrigo Vieira da Silva                          --
+--Washington Rodrigo Dias da Silva                 --
+-----------------------------------------------------
+"""
 from sklearn import metrics
 import matplotlib.pyplot as plt
 import numpy as np
