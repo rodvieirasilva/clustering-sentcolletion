@@ -21,7 +21,7 @@ class EvidenceAccumulationCLustering:
 
     def step1(self, kneighbors=None):
         if (kneighbors is None) or (kneighbors <= 0):
-            kneighbors = len(self.distanceNP)
+            kneighbors = len(self.distanceNP) - 1
         C = [[0 for i in range(kneighbors)] for j in range(len(self.distanceNP))]
         for p in self.P:            
             for i,x in enumerate(self.distanceNP):
