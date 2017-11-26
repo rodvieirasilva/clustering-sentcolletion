@@ -37,29 +37,28 @@ class EvidenceAccumulationCLustering:
         self.C = C
         return C
 
-    def step2(self, kneighbors, alg='single', title=None):
+    def step2(self, kneighbors, k, alg='single', title=None):
         distance = pdist(self.C, metric='euclidean')
-        singleLink = SimpleLinkage(distance=distance, k=10, alg=alg)
+        singleLink = SimpleLinkage(distance=distance, k=k, alg=alg)
         singleLink.name = "EvidenceAccumulationClustering"
         if(title is None):
-            title = "eac-k{0}".format(kneighbors)
+            title = "eac-neighbors{0}".format(kneighbors)
         singleLink.title = title
         singleLink.fit(self.C)
         singleLink.dendrogram()
         return singleLink.labels_
 
-    def binomial(self, x, y):
-        
+    def binomial(self, x, y):        
         if y == x:
             return 1
-        elif y == 1:         # see georg's comment
+        elif y == 1:         
             return x
-        elif y > x:          # will be executed only if y != 1 and y != x
+        elif y > x:          
             return 0
-        else:                # will be executed only if y != 1 and y != x and x <= y
+        else:                
             a = math.factorial(x)
             b = math.factorial(y)
-            c = math.factorial(x-y)  # that appears to be useful to get the correct result
+            c = math.factorial(x-y)
             div = a // (b * c)
             return div
 
@@ -74,22 +73,30 @@ def main():
         bagofwords = json.load(json_data)
 
     PBases = ['KMeans/KMeans_k2.json', 'KMeans/KMeans_k3.json', 'KMeans/KMeans_k4.json', 'KMeans/KMeans_k5.json'
-                , 'KMeans/KMeans_k6.json', 'DBSCAN/DBSCAN_eps_1_min_samples_40.json', 
-                'WardLink/WardLink_k2.json', 
-                'WardLink/WardLink_k10.json']
+,'KMeans/KMeans_k6.json', 'KMeans/KMeans_k7.json', 'KMeans/KMeans_k8.json', 'KMeans/KMeans_k9.json'
+, 'KMeans/KMeans_k10.json'
+
+                # , 'KMeans/KMeans_k6.json', 'DBSCAN/DBSCAN_eps_1_min_samples_40.json', 
+                # 'WardLink/WardLink_k2.json', 
+                # 'WardLink/WardLink_k10.json'
+                
+                ]
     P = []
     for base in PBases:
         with open(base) as json_data:
             P.append(json.load(json_data))
 
     eca = EvidenceAccumulationCLustering(P=P, X=bagofwords, distanceNP=None)    
-    kneighbors = 2771
+    kneighbors = 20
+    k=50
     name = "EvidenceAccumulationClustering"
-    title = "KMeans2-5_DBSCAN_eps_1_min_samples_40_WardLink_k2_WardLink_k10_eac-k{0}".format(kneighbors)
+    # title = "KMeans2-5_DBSCAN_eps_1_min_samples_40_WardLink_k2_WardLink_k10_eac-neighbors{0}-k{1}".format(kneighbors, k)
+    title = "KMeans2-10_eac-neighbors{0}-k{1}".format(kneighbors, k)
     eca.step1(kneighbors=kneighbors)  
-    y_pred = eca.step2(kneighbors=kneighbors, title=title)
+    y_pred = eca.step2(kneighbors=kneighbors, k=k, title=title)
     pca = PlotPCA(filename=None, data=bagofwords)
-    titleFig = "KMeans2-5_DBSCAN_eps_1_min_samples_40\nWardLink_k2_WardLink_k10_eac-k{0}".format(kneighbors)
+    # titleFig = "KMeans2-5_DBSCAN_eps_1_min_samples_40_\nWardLink_k2_WardLink_k10_eac-neighbors{0}-k{1}".format(kneighbors, k)
+    titleFig = "KMeans2-10_eac-neighbors{0}-k{1}".format(kneighbors, k)
     pca.plotpca(title=titleFig, words=bagofwords, y_pred=y_pred, classnames=set(y_pred))    
     pca.savefig("{0}/{1}_pca.png".format(name, title))
     save("{0}/{1}.json".format(name, title), y_pred.tolist())    
