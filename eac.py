@@ -38,7 +38,8 @@ class EvidenceAccumulationCLustering:
         return C
 
     def step2(self, kneighbors, alg='single', title=None):
-        singleLink = SimpleLinkage(distance=self.distanceNP, k=10, alg=alg)
+        distance = pdist(self.C, metric='euclidean')
+        singleLink = SimpleLinkage(distance=distance, k=10, alg=alg)
         singleLink.name = "EvidenceAccumulationClustering"
         if(title is None):
             title = "eac-k{0}".format(kneighbors)
@@ -82,13 +83,14 @@ def main():
             P.append(json.load(json_data))
 
     eca = EvidenceAccumulationCLustering(P=P, X=bagofwords, distanceNP=None)    
-    kneighbors = 20
+    kneighbors = 2771
     name = "EvidenceAccumulationClustering"
     title = "KMeans2-5_DBSCAN_eps_1_min_samples_40_WardLink_k2_WardLink_k10_eac-k{0}".format(kneighbors)
     eca.step1(kneighbors=kneighbors)  
     y_pred = eca.step2(kneighbors=kneighbors, title=title)
     pca = PlotPCA(filename=None, data=bagofwords)
-    pca.plotpca(title=title, words=bagofwords, y_pred=y_pred, classnames=set(y_pred))
+    titleFig = "KMeans2-5_DBSCAN_eps_1_min_samples_40\nWardLink_k2_WardLink_k10_eac-k{0}".format(kneighbors)
+    pca.plotpca(title=titleFig, words=bagofwords, y_pred=y_pred, classnames=set(y_pred))    
     pca.savefig("{0}/{1}_pca.png".format(name, title))
     save("{0}/{1}.json".format(name, title), y_pred.tolist())    
     print("Finished")
