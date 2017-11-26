@@ -19,7 +19,9 @@ class EvidenceAccumulationCLustering:
         self.distanceNP = distanceNP
         self.P = P
 
-    def step1(self, kneighbors):
+    def step1(self, kneighbors=None):
+        if (kneighbors is None) or (kneighbors <= 0):
+            kneighbors = len(self.distanceNP)
         C = [[0 for i in range(kneighbors)] for j in range(len(self.distanceNP))]
         for p in self.P:            
             for i,x in enumerate(self.distanceNP):
@@ -42,7 +44,7 @@ class EvidenceAccumulationCLustering:
         singleLink = SimpleLinkage(distance=distance, k=k, alg=alg)
         singleLink.name = "EvidenceAccumulationClustering"
         if(title is None):
-            title = "eac-neighbors{0}".format(kneighbors)
+            title = "eac-{0}Linkage-neighbors{1}".format(kneighbors, alg)
         singleLink.title = title
         singleLink.fit(self.C)
         singleLink.dendrogram()
@@ -87,16 +89,17 @@ def main():
             P.append(json.load(json_data))
 
     eca = EvidenceAccumulationCLustering(P=P, X=bagofwords, distanceNP=None)    
-    kneighbors = 20
-    k=50
+    kneighbors = 2771
+    k=6
+    alg='average'
     name = "EvidenceAccumulationClustering"
     # title = "KMeans2-5_DBSCAN_eps_1_min_samples_40_WardLink_k2_WardLink_k10_eac-neighbors{0}-k{1}".format(kneighbors, k)
-    title = "KMeans2-10_eac-neighbors{0}-k{1}".format(kneighbors, k)
+    title = "KMeans2-10_eac-{0}Linkage-neighbors{1}-k{2}".format(alg, kneighbors, k)
     eca.step1(kneighbors=kneighbors)  
-    y_pred = eca.step2(kneighbors=kneighbors, k=k, title=title)
+    y_pred = eca.step2(kneighbors=kneighbors, k=k, title=title, alg=alg)
     pca = PlotPCA(filename=None, data=bagofwords)
     # titleFig = "KMeans2-5_DBSCAN_eps_1_min_samples_40_\nWardLink_k2_WardLink_k10_eac-neighbors{0}-k{1}".format(kneighbors, k)
-    titleFig = "KMeans2-10_eac-neighbors{0}-k{1}".format(kneighbors, k)
+    titleFig = "KMeans2-10_eac-{0}Linkage-neighbors{1}-k{2}".format(alg, kneighbors, k)
     pca.plotpca(title=titleFig, words=bagofwords, y_pred=y_pred, classnames=set(y_pred))    
     pca.savefig("{0}/{1}_pca.png".format(name, title))
     save("{0}/{1}.json".format(name, title), y_pred.tolist())    
