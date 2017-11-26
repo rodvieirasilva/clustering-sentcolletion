@@ -5,6 +5,7 @@ import json
 import math
 from util import save
 from sklearn.neighbors import kneighbors_graph
+from sklearn import cluster, datasets
 
 class EvidenceAccumulationCLustering:
     
@@ -71,38 +72,78 @@ class EvidenceAccumulationCLustering:
         return (1.0/math.factorial(k)) * m
 
 def main():
-    with open('basesjson/sklearn_bagofwords.json') as json_data:
-        bagofwords = json.load(json_data)
+    print('Escolha uma das opções: ')
+    print('1 - Dados da base IRIS')
+    print('2 - Partições KMeans da base de Tweets')
+    print('0 - Sair')
+    option = input('Opção: ')
 
-    PBases = ['KMeans/KMeans_k2.json', 'KMeans/KMeans_k3.json', 'KMeans/KMeans_k4.json', 'KMeans/KMeans_k5.json'
-,'KMeans/KMeans_k6.json', 'KMeans/KMeans_k7.json', 'KMeans/KMeans_k8.json', 'KMeans/KMeans_k9.json'
-, 'KMeans/KMeans_k10.json'
+    if option == "1" or option == "2":
+        print('carregando a base de dados')
+        name = "EvidenceAccumulationClustering"
+
+        if option == "1":
+            # Carregando a Base de Dados Iris
+            iris = datasets.load_iris()
+            bagofwords = iris.data
+            y = iris.target
+            
+            # Normalizando a base de dados
+            minimum = 0
+            maximum = 1
+            features = len(bagofwords[0,:])
+            for i in range(0, features):
+                smaller = min(bagofwords[:,i])
+                bigger = max(bagofwords[:,i])
+                bagofwords[:,i] = (minimum + ((bagofwords[:,i] - smaller)/(bigger-smaller))*(maximum-minimum)) 
+                
+            # Mostrando os dados da base IRIS com o PCA
+            pca = PlotPCA(filename=None, data=bagofwords)
+            title = "datasetIRIS"
+            titleFig = "EvidenceAccumulationClustering\datasetIRIS"
+            pca.plotpca(title=titleFig, words=bagofwords, y_pred=y, classnames=set(y))    
+            pca.savefig("{0}/{1}_pca.png".format(name, title))
+            save("{0}/{1}.json".format(name, title), y.tolist())    
+
+            P = []
+            for k in range(2,10):
+                model = cluster.KMeans(n_clusters=k, max_iter=1000);
+                model.fit(bagofwords);
+                P.append(model.labels_)
+
+        elif option == "2":
+            with open('basesjson/sklearn_bagofwords.json') as json_data:
+                bagofwords = json.load(json_data)
+
+            PBases = ['KMeans/KMeans_k2.json', 'KMeans/KMeans_k3.json', 'KMeans/KMeans_k4.json', 'KMeans/KMeans_k5.json'
+                     ,'KMeans/KMeans_k6.json', 'KMeans/KMeans_k7.json', 'KMeans/KMeans_k8.json', 'KMeans/KMeans_k9.json'
+                     , 'KMeans/KMeans_k10.json'
 
                 # , 'KMeans/KMeans_k6.json', 'DBSCAN/DBSCAN_eps_1_min_samples_40.json', 
                 # 'WardLink/WardLink_k2.json', 
                 # 'WardLink/WardLink_k10.json'
                 
-                ]
-    P = []
-    for base in PBases:
-        with open(base) as json_data:
-            P.append(json.load(json_data))
+                    ]
+            P = []
+            for base in PBases:
+                with open(base) as json_data:
+                    P.append(json.load(json_data))
 
-    eca = EvidenceAccumulationCLustering(P=P, X=bagofwords, distanceNP=None)    
-    kneighbors = 2771
-    k=6
-    alg='average'
-    name = "EvidenceAccumulationClustering"
-    # title = "KMeans2-5_DBSCAN_eps_1_min_samples_40_WardLink_k2_WardLink_k10_eac-neighbors{0}-k{1}".format(kneighbors, k)
-    title = "KMeans2-10_eac-{0}Linkage-neighbors{1}-k{2}".format(alg, kneighbors, k)
-    eca.step1(kneighbors=kneighbors)  
-    y_pred = eca.step2(kneighbors=kneighbors, k=k, title=title, alg=alg)
-    pca = PlotPCA(filename=None, data=bagofwords)
-    # titleFig = "KMeans2-5_DBSCAN_eps_1_min_samples_40_\nWardLink_k2_WardLink_k10_eac-neighbors{0}-k{1}".format(kneighbors, k)
-    titleFig = "KMeans2-10_eac-{0}Linkage-neighbors{1}-k{2}".format(alg, kneighbors, k)
-    pca.plotpca(title=titleFig, words=bagofwords, y_pred=y_pred, classnames=set(y_pred))    
-    pca.savefig("{0}/{1}_pca.png".format(name, title))
-    save("{0}/{1}.json".format(name, title), y_pred.tolist())    
+        eca = EvidenceAccumulationCLustering(P=P, X=bagofwords, distanceNP=None)    
+        kneighbors = len(bagofwords)
+        k=3
+        alg='average'
+        # title = "KMeans2-5_DBSCAN_eps_1_min_samples_40_WardLink_k2_WardLink_k10_eac-neighbors{0}-k{1}".format(kneighbors, k)
+        title = "KMeans2-10_eac-{0}Linkage-neighbors{1}-k{2}".format(alg, kneighbors, k)
+        eca.step1(kneighbors=kneighbors)  
+        y_pred = eca.step2(kneighbors=kneighbors, k=k, title=title, alg=alg)
+        pca = PlotPCA(filename=None, data=bagofwords)
+        # titleFig = "KMeans2-5_DBSCAN_eps_1_min_samples_40_\nWardLink_k2_WardLink_k10_eac-neighbors{0}-k{1}".format(kneighbors, k)
+        titleFig = "KMeans2-10_eac-{0}Linkage-neighbors{1}-k{2}".format(alg, kneighbors, k)
+        pca.plotpca(title=titleFig, words=bagofwords, y_pred=y_pred, classnames=set(y_pred))    
+        pca.savefig("{0}/{1}_pca.png".format(name, title))
+        save("{0}/{1}.json".format(name, title), y_pred.tolist())    
+
     print("Finished")
 
 if __name__ == '__main__':
