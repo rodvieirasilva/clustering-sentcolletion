@@ -40,6 +40,7 @@ class EvidenceAccumulationCLustering:
         self.C = C
 
 
+
         # Calculo da Co-Associação sem verificação do vizinho C(i,j) = nij/N
         V = [[0 for i in range(len(self.P[0]))] for j in range(len(self.P[0]))]
         for p in self.P:            
@@ -55,8 +56,6 @@ class EvidenceAccumulationCLustering:
                     if cK > kneighbors:
                         break      
         self.C = V
-
-
 
 
 
@@ -132,15 +131,6 @@ def main():
                 model = cluster.KMeans(n_clusters=k, max_iter=1000);
                 model.fit(bagofwords);
                 P.append(model.labels_)
-                #if k == 3:
-                #    # Mostrando os dados da base IRIS com o PCA
-                #    pca = PlotPCA(filename=None, data=bagofwords)
-                #    title = "datasetIRIS1"
-                #    titleFig = "EvidenceAccumulationClustering\datasetIRIS1"
-                #    pca.plotpca(title=titleFig, words=bagofwords, y_pred=model.labels_, classnames=set(model.labels_))    
-                #    pca.savefig("{0}/{1}_pca.png".format(name, title))
-                #    save("{0}/{1}.json".format(name, title), model.labels_.tolist()) 
-
 
         elif option == "2":
             with open('basesjson/sklearn_bagofwords.json') as json_data:
@@ -163,7 +153,7 @@ def main():
         eca = EvidenceAccumulationCLustering(P=P, X=bagofwords, distanceNP=None)    
         kneighbors = len(bagofwords)
         k=3
-        alg='average'
+        alg='single'
         # title = "KMeans2-5_DBSCAN_eps_1_min_samples_40_WardLink_k2_WardLink_k10_eac-neighbors{0}-k{1}".format(kneighbors, k)
         title = "KMeans2-10_eac-{0}Linkage-neighbors{1}-k{2}".format(alg, kneighbors, k)
         eca.step1(kneighbors=kneighbors)  
