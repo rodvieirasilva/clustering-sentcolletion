@@ -38,7 +38,29 @@ class EvidenceAccumulationCLustering:
                     if cK > kneighbors:
                         break        
         self.C = C
-        return C
+
+
+        # Calculo da Co-Associação sem verificação do vizinho C(i,j) = nij/N
+        V = [[0 for i in range(len(self.P[0]))] for j in range(len(self.P[0]))]
+        for p in self.P:            
+            for i,x in enumerate(p):
+                cK = 1
+                for j, l in enumerate(p):
+                    if j != i:
+                        if p[i] == p[j]:                
+                            V[i][cK-1] += 1/len(self.P)
+
+                        cK += 1
+
+                    if cK > kneighbors:
+                        break      
+        self.C = V
+
+
+
+
+
+        return self.C
 
     def step2(self, kneighbors, k, alg='single', title=None):
         distance = pdist(self.C, metric='euclidean')
@@ -110,6 +132,15 @@ def main():
                 model = cluster.KMeans(n_clusters=k, max_iter=1000);
                 model.fit(bagofwords);
                 P.append(model.labels_)
+                #if k == 3:
+                #    # Mostrando os dados da base IRIS com o PCA
+                #    pca = PlotPCA(filename=None, data=bagofwords)
+                #    title = "datasetIRIS1"
+                #    titleFig = "EvidenceAccumulationClustering\datasetIRIS1"
+                #    pca.plotpca(title=titleFig, words=bagofwords, y_pred=model.labels_, classnames=set(model.labels_))    
+                #    pca.savefig("{0}/{1}_pca.png".format(name, title))
+                #    save("{0}/{1}.json".format(name, title), model.labels_.tolist()) 
+
 
         elif option == "2":
             with open('basesjson/sklearn_bagofwords.json') as json_data:
