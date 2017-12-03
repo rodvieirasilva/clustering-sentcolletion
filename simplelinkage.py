@@ -10,6 +10,7 @@ from scipy.cluster.hierarchy import linkage, fcluster, dendrogram, cut_tree
 import matplotlib.pyplot as plt
 import json
 from scipy.spatial.distance  import pdist
+from util import mkdir
 
 class SimpleLinkage:
     simpleLinkage = None
@@ -26,8 +27,7 @@ class SimpleLinkage:
         self.alg = alg
 
     def fit(self, data):        
-        self.simpleLinkage = linkage(self.distance, self.alg)        
-        print("Teste: {0}".format(self.distance.shape))
+        self.simpleLinkage = linkage(self.distance, self.alg)
         self.labels_ = fcluster(self.simpleLinkage, self.k, criterion='maxclust')
     
     def dendrogram(self):

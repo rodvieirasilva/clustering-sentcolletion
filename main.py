@@ -9,6 +9,7 @@
 
 from algoritmos import main as algmenu
 from preprocess import main as premain
+from eac import main as eacmain
 
 def menu():
     print("-- Sent Collection v.1 para análise de agrupamento --")
@@ -18,8 +19,9 @@ def menu():
     print("--Washington Rodrigo Dias da Silva                 --")
     print("-----------------------------------------------------")
     print('Escolha uma das opções: ')
-    print('1 - Aplicar Pré-processamento')
-    print('2 - Aplicar e Analisar algoritmos')
+    print('1 - Aplicar Pré-processamento (Atividade 1)')
+    print('2 - Aplicar e Analisar algoritmos (Atividade 2)')
+    print('3 - Aplicação Evidence Accumulation Clustering (Atividade 3)')
     print('0 - Sair')
     return input('Opção: ')
 
@@ -30,6 +32,8 @@ def main():
             premain()
         elif opcao=="2":
             algmenu()
+        elif opcao=="3":
+            eacmain()
         elif(opcao!="0"):
             print("Opção Inválida!")
         opcao = menu()    

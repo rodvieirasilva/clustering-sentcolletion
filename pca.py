@@ -15,6 +15,7 @@ import re
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import colorsys
+from util import mkdir
 
 class PlotPCA:
     
@@ -46,13 +47,12 @@ class PlotPCA:
         plt.show()
 
     def savefig(self, filename):
+        mkdir(filename)
         plt.savefig(filename)
         plt.clf()
+        plt.close("all")
 
-def main():
-   
-    pca = PlotPCA(filename="basesjson/sklearn_bagofwords.json")
-
+def plotPcaTweets(prefix):
     with open('basesjson/complete.json') as json_data:
         complete = json.load(json_data)
 
@@ -63,13 +63,17 @@ def main():
     Yclazz = [item[0] for item in Ys]
     Ytheme = [item[1] for item in Ys]
     dictthemeclass = {0:{0:0,1:1},1:{0:2, 1:3}, 2:{0:4, 1:5}}
-    Yclasstheme = [dictthemeclass[item[1]][item[0]] for item in Ys]    
+    Yclasstheme = [dictthemeclass[item[1]][item[0]] for item in Ys]   
+    pca = PlotPCA(filename="basesjson/sklearn_bagofwords.json") 
     pca.plotpca("pca_class", pca.bagofwords, Yclazz , ["negative", "positive"])
-    pca.savefig('pca/pca_class.png')
+    pca.savefig(prefix + '/pca_class.png')
     pca.plotpca("pca_theme", pca.bagofwords, Ytheme, ["game", "movie", "smartphone"])
-    pca.savefig('pca/pca_theme.png')
+    pca.savefig(prefix + '/pca_theme.png')
     pca.plotpca("pca_classtheme", pca.bagofwords, Yclasstheme , ["negative_game","positive_game","negative_movie","positive_movie", "negative_smartphone", "positive_smartphone"])
-    pca.savefig('pca/pca_classtheme.png')
+    pca.savefig(prefix + '/pca_classtheme.png')
+
+def main():
+    plotPcaTweets('pca')
     print("Finish")
 
 if __name__ == '__main__':
