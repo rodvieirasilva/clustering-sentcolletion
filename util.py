@@ -27,6 +27,15 @@ def savecsv(filename, header, data):
                 file.write(';')
             file.write('\n')
 
+def saveclu(filename, Y):
+    mkdir(filename)
+    with open(filename, 'w', encoding='utf-8') as file:
+        for i, y in enumerate(Y):
+            file.write(str(i))
+            file.write('\t')
+            file.write(str(y))
+            file.write('\n')            
+
 def mkdir(filename):
     directory = os.path.dirname(filename)
     if not os.path.exists(directory):

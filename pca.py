@@ -71,6 +71,7 @@ def plotPcaTweets(prefix):
     pca.savefig(prefix + '/pca_theme.png')
     pca.plotpca("pca_classtheme", pca.bagofwords, Yclasstheme , ["negative_game","positive_game","negative_movie","positive_movie", "negative_smartphone", "positive_smartphone"])
     pca.savefig(prefix + '/pca_classtheme.png')
+    return Yclazz, Ytheme, Yclasstheme
 
 def main():
     plotPcaTweets('pca')

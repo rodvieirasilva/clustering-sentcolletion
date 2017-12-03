@@ -3,7 +3,7 @@ from pca import PlotPCA, plotPcaTweets
 from scipy.spatial.distance  import pdist
 import json
 import math
-from util import save, inputInt
+from util import save, inputInt, saveclu
 from sklearn.neighbors import kneighbors_graph
 from sklearn import cluster, datasets
 from random import randrange
@@ -91,8 +91,9 @@ def runKMeans(X, prefix):
     for i in range(0,30):        
         k = randrange(2, 21)
         print('Executando {0} - KMeans, k={1}'.format(i, k))
-        model = cluster.KMeans(n_clusters=k, max_iter=1000)        
-        model.title = "{0}/KMeans/{1:02.0f}_KMeans_k{2:02.0f}".format(prefix, i, k)
+        model = cluster.KMeans(n_clusters=k, max_iter=1000)
+        titleParams = "{0:02.0f}_KMeans_k{1:02.0f}".format(i, k)
+        model.title = "{0}/KMeans/{1}".format(prefix, titleParams)
         model.name = "KMeans"
         model.fit(X)
         p = model.labels_
@@ -101,7 +102,8 @@ def runKMeans(X, prefix):
         titleFig = "{0} - {1} - KMeans k={2}".format(prefix, i, k)
         pca.plotpca(title=titleFig, words=X, y_pred=p, classnames=set(p))    
         pca.savefig("{0}/{1}_pca.png".format(folder, model.title))
-        save("{0}/{1}.json".format(folder, model.title), p.tolist()) 
+        save("{0}/{1}.json".format(folder, model.title), p.tolist())
+        saveclu("{0}/{1}/pvis/partitions/{2}.clu".format(folder, prefix, titleParams), p)
     return P
 
 def loadP(prefix):
@@ -124,10 +126,14 @@ def menu():
 
 def loadTweets():
     X = []
+    title = 'tweets'
     with open('basesjson/sklearn_bagofwords.json') as json_data:
         X = json.load(json_data)
-    plotPcaTweets('EvidenceAccumulationClustering/tweets')
-    return X, 'tweets'
+    Yclazz, Ytheme, Yclasstheme = plotPcaTweets('EvidenceAccumulationClustering/tweets')
+    saveclu("EvidenceAccumulationClustering/{0}/pvis/realClass.clu".format(title), Yclazz)
+    saveclu("EvidenceAccumulationClustering/{0}/pvis/realTheme.clu".format(title), Ytheme)
+    saveclu("EvidenceAccumulationClustering/{0}/pvis/realClassTheme.clu".format(title), Yclasstheme)
+    return X, title
 
 def loadIris():
     iris = datasets.load_iris()
@@ -139,11 +145,11 @@ def loadIris():
     titleFig = "PCA Dataset IRIS"
     pca.plotpca(title=titleFig, words=X, y_pred=y, classnames=iris.target_names) 
     pca.savefig("EvidenceAccumulationClustering/{0}/{1}_pca.png".format(title, titleFig))
-    save("EvidenceAccumulationClustering/{0}/{1}.json".format(title, title), y.tolist())    
+    save("EvidenceAccumulationClustering/{0}/{1}.json".format(title, title), y.tolist())
+    saveclu("EvidenceAccumulationClustering/{0}/pvis/real.clu".format(title), y)
     return X, title
 
-def main():
-    
+def main():    
     option = menu()    
     while(option!=0):
         if option == 1:
