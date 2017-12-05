@@ -69,26 +69,24 @@ class EvidenceAccumulationCLustering:
             m += self.binomial(k, l) * ((-1) ** (k-l)) * (l**n)
         return (1.0/math.factorial(k)) * m
 
-def runEac(P, X, prefix, Y):    
+def runEac(P, X, prefix, Y, ks=[2]):    
     print('Rodando EvidenceAccumulationClustering - {0}'.format(prefix))
     name = "EvidenceAccumulationClustering"
     eca = EvidenceAccumulationCLustering(P=P, X=X, distanceNP=None)    
     kneighbors = len(X)
-    k=2
-    alg='single'
-    title = "{0}/eac-{1}Link-neighbors{2}-k{3}".format(prefix, alg, kneighbors, k)
-    eca.step1(kneighbors=kneighbors)  
-    y_pred = eca.step2(kneighbors=kneighbors, k=k, title=title, alg=alg)
-
-    # Indice Rand Ajustado
-    ind_rand = metrics.adjusted_rand_score(Y, y_pred)
-    # Indice NMI
-    ind_nmi = metrics.normalized_mutual_info_score(Y, y_pred)
-
-    pca = PlotPCA(filename=None, data=X)
-    pca.plotpca(title=title, words=X, y_pred=y_pred, classnames=set(y_pred), text='Indice Rand Ajustado: {0} NMI: {1}'.format(ind_rand, ind_nmi))    
-    pca.savefig("{0}/{1}_pca.png".format(name, title))
-    save("{0}/{1}.json".format(name, title), y_pred.tolist()) 
+    alg='single'    
+    for k in ks:
+        title = "{0}/eac-{1}Link-neighbors{2}-k{3}".format(prefix, alg, kneighbors, k)
+        eca.step1(kneighbors=kneighbors)  
+        y_pred = eca.step2(kneighbors=kneighbors, k=k, title=title, alg=alg)
+        # Indice Rand Ajustado
+        ind_rand = metrics.adjusted_rand_score(Y, y_pred)
+        # Indice NMI
+        ind_nmi = metrics.normalized_mutual_info_score(Y, y_pred)
+        pca = PlotPCA(filename=None, data=X)
+        pca.plotpca(title=title, words=X, y_pred=y_pred, classnames=set(y_pred), text='Indice Rand Ajustado: {0} NMI: {1}'.format(ind_rand, ind_nmi))    
+        pca.savefig("{0}/{1}_pca.png".format(name, title))
+        save("{0}/{1}.json".format(name, title), y_pred.tolist()) 
 
 def runKMeans(X, prefix):
     print('Executando 30 KMeans, k =[2,20] - {0}'.format(prefix))
@@ -98,7 +96,7 @@ def runKMeans(X, prefix):
         k = randrange(2, 21)
         print('Executando {0} - KMeans, k={1}'.format(i, k))
         model = cluster.KMeans(n_clusters=k, max_iter=1000)
-        titleParams = "{0:02.0f}_KMeans_k{1:02.0f}".format(i, k)
+        titleParams = "{0:02.0f}-KMeans-k{1:02.0f}".format(i, k)
         model.title = "{0}/KMeans/{1}".format(prefix, titleParams)
         model.name = "KMeans"
         model.fit(X)
@@ -175,7 +173,7 @@ def main():
             print('carregando a base de dados - TWEETS')            
             X, title, Y = loadTweets()
             P = loadP(title)
-            runEac(P, X ,title, Y)
+            runEac(P, X ,title, Y, [2,3,4,5,6,7,8,9])
         elif option == 5:
             print('carregando a base de dados - IRIS')
             X, title, Y = loadIris()
@@ -184,7 +182,7 @@ def main():
             print('carregando a base de dados - TWEETS') 
             X, title, Y = loadTweets()
             P = runKMeans(X, title)
-            runEac(P, X , title, Y)
+            runEac(P, X , title, Y, [2,3,4,5,6,7,8,9])
         option =  menu()
     print("Finished")
 
