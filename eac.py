@@ -8,6 +8,7 @@ from sklearn.neighbors import kneighbors_graph
 from sklearn import cluster, datasets, metrics
 from random import randrange
 import glob
+from pvis import PVis
 
 class EvidenceAccumulationCLustering:
     
@@ -88,6 +89,18 @@ def runEac(P, X, prefix, Y, ks=[2]):
         pca.savefig("{0}/{1}_pca.png".format(name, title))
         save("{0}/{1}.json".format(name, title), y_pred.tolist()) 
 
+def runPVis(prefix):
+    baseref = "EvidenceAccumulationClustering\\{0}\\pvis\\".format(prefix)
+    basepartitions = "EvidenceAccumulationClustering\\{0}\\pvis\\partitions\\".format(prefix)
+    filenameRefs = glob.glob("{0}*.clu".format(baseref))
+    filenamesPartitions = glob.glob("{0}*.clu".format(basepartitions))
+    pvis = PVis()
+    ordModes =  range(1,5)
+    for filenameRef in filenameRefs:        
+        for ordmode in ordModes:
+            filenameOut = filenameRef +'-pvis'+'-ordmode'+ str(ordmode) + '.pdf'
+            pvis.post(ordmode=ordmode, nrgrp=2, filenameRef=filenameRef, filenamesPartitions=filenamesPartitions, filenameOut=filenameOut)
+
 def runKMeans(X, prefix):
     print('Executando 30 KMeans, k =[2,20] - {0}'.format(prefix))
     P = []
@@ -125,8 +138,10 @@ def menu():
     print('3 - Aplicar EAC Dados da base IRIS')
     print('4 - Aplicar EAC Partições KMeans da base de Tweets')
     print('5 - Aplicar K-Means e Executar EAC para todas as bases')
+    print('6 - Rodar PVis para todas as particoes IRIS encontradas')
+    print('7 - Rodar PVis para todas as particoes Tweets encontradas')
     print('0 - Sair')
-    return inputInt('Opção: ', 5)
+    return inputInt('Opção: ', 7)
 
 def loadTweets():
     X = []
@@ -183,6 +198,10 @@ def main():
             X, title, Y = loadTweets()
             P = runKMeans(X, title)
             runEac(P, X , title, Y, [2,3,4,5,6,7,8,9])
+        elif option == 6:
+            runPVis('iris')
+        elif option == 7:
+            runPVis('tweets')
         option =  menu()
     print("Finished")
 
