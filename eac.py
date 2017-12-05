@@ -5,7 +5,7 @@ import json
 import math
 from util import save, inputInt, saveclu
 from sklearn.neighbors import kneighbors_graph
-from sklearn import cluster, datasets
+from sklearn import cluster, datasets, metrics
 from random import randrange
 import glob
 
@@ -69,18 +69,24 @@ class EvidenceAccumulationCLustering:
             m += self.binomial(k, l) * ((-1) ** (k-l)) * (l**n)
         return (1.0/math.factorial(k)) * m
 
-def runEac(P, X, prefix):    
+def runEac(P, X, prefix, Y):    
     print('Rodando EvidenceAccumulationClustering - {0}'.format(prefix))
     name = "EvidenceAccumulationClustering"
     eca = EvidenceAccumulationCLustering(P=P, X=X, distanceNP=None)    
     kneighbors = len(X)
-    k=3
+    k=2
     alg='single'
     title = "{0}/eac-{1}Link-neighbors{2}-k{3}".format(prefix, alg, kneighbors, k)
     eca.step1(kneighbors=kneighbors)  
     y_pred = eca.step2(kneighbors=kneighbors, k=k, title=title, alg=alg)
+
+    # Indice Rand Ajustado
+    ind_rand = metrics.adjusted_rand_score(Y, y_pred)
+    # Indice NMI
+    ind_nmi = metrics.normalized_mutual_info_score(Y, y_pred)
+
     pca = PlotPCA(filename=None, data=X)
-    pca.plotpca(title=title, words=X, y_pred=y_pred, classnames=set(y_pred))    
+    pca.plotpca(title=title, words=X, y_pred=y_pred, classnames=set(y_pred), text='Indice Rand Ajustado: {0} NMI: {1}'.format(ind_rand, ind_nmi))    
     pca.savefig("{0}/{1}_pca.png".format(name, title))
     save("{0}/{1}.json".format(name, title), y_pred.tolist()) 
 
@@ -133,52 +139,52 @@ def loadTweets():
     saveclu("EvidenceAccumulationClustering/{0}/pvis/realClass.clu".format(title), Yclazz)
     saveclu("EvidenceAccumulationClustering/{0}/pvis/realTheme.clu".format(title), Ytheme)
     saveclu("EvidenceAccumulationClustering/{0}/pvis/realClassTheme.clu".format(title), Yclasstheme)
-    return X, title
+    return X, title, Ytheme
 
 def loadIris():
     iris = datasets.load_iris()
     X = iris.data
-    y = iris.target
+    Y = iris.target
     # Mostrando os dados da base IRIS com o PCA
     pca = PlotPCA(filename=None, data=X)
     title = "iris"
     titleFig = "PCA Dataset IRIS"
-    pca.plotpca(title=titleFig, words=X, y_pred=y, classnames=iris.target_names) 
+    pca.plotpca(title=titleFig, words=X, y_pred=Y, classnames=iris.target_names) 
     pca.savefig("EvidenceAccumulationClustering/{0}/{1}_pca.png".format(title, titleFig))
-    save("EvidenceAccumulationClustering/{0}/{1}.json".format(title, title), y.tolist())
-    saveclu("EvidenceAccumulationClustering/{0}/pvis/real.clu".format(title), y)
-    return X, title
+    save("EvidenceAccumulationClustering/{0}/{1}.json".format(title, title), Y.tolist())
+    saveclu("EvidenceAccumulationClustering/{0}/pvis/real.clu".format(title), Y)
+    return X, title, Y
 
 def main():    
     option = menu()    
     while(option!=0):
         if option == 1:
             print('carregando a base de dados - IRIS')
-            X, title = loadIris()
+            X, title, Y = loadIris()
             runKMeans(X, title)
         elif option == 2:
             print('carregando a base de dados - TWEETS')
-            X, title = loadTweets()
+            X, title, Y = loadTweets()
             runKMeans(X, title)
         elif option == 3:
             print('carregando a base de dados - IRIS')
-            X, title = loadIris()
+            X, title, Y = loadIris()
             P = loadP(title)
-            runEac(P, X , title)
+            runEac(P, X , title, Y)
         elif option == 4:
             print('carregando a base de dados - TWEETS')            
-            X, title = loadTweets()
+            X, title, Y = loadTweets()
             P = loadP(title)
-            runEac(P, X ,title)
+            runEac(P, X ,title, Y)
         elif option == 5:
             print('carregando a base de dados - IRIS')
-            X, title = loadIris()
+            X, title, Y = loadIris()
             P = runKMeans(X, title)
-            runEac(P, X , title)
+            runEac(P, X , title, Y)
             print('carregando a base de dados - TWEETS') 
-            X, title = loadTweets()
+            X, title, Y = loadTweets()
             P = runKMeans(X, title)
-            runEac(P, X , title)
+            runEac(P, X , title, Y)
         option =  menu()
     print("Finished")
 

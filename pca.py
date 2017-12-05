@@ -31,9 +31,10 @@ class PlotPCA:
     def gencolors(self, n):
         return [colorsys.hsv_to_rgb(x*1.0/n, 0.5, 0.7) for x in range(n)]
 
-    def plotpca(self, title, words, y_pred, classnames):
+    def plotpca(self, title, words, y_pred, classnames, text=None):
         plt.figure(num=title)
         plt.title(title)
+        plt.figtext(0.1, 0.01, text)
         XPCA = self.pca.transform(words)
         basec = self.gencolors(len(classnames))
         colors = [basec[ (c % len(basec)) ] for c in y_pred]
