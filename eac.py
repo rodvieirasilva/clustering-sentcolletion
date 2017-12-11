@@ -70,13 +70,15 @@ class EvidenceAccumulationCLustering:
             m += self.binomial(k, l) * ((-1) ** (k-l)) * (l**n)
         return (1.0/math.factorial(k)) * m
 
-def runEac(P, X, prefix, Y, ks=[2]):    
+def runEac(P, X, prefix, Y, ks=[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]):    
     print('Rodando EvidenceAccumulationClustering - {0}'.format(prefix))
     name = "EvidenceAccumulationClustering"
     eca = EvidenceAccumulationCLustering(P=P, X=X, distanceNP=None)    
     kneighbors = len(X)
     alg='single'    
+    
     for k in ks:
+        titleParams = "eac-{1}Link-neighbors{2}-k{3}".format(prefix, alg, kneighbors, k)
         title = "{0}/eac-{1}Link-neighbors{2}-k{3}".format(prefix, alg, kneighbors, k)
         eca.step1(kneighbors=kneighbors)  
         y_pred = eca.step2(kneighbors=kneighbors, k=k, title=title, alg=alg)
@@ -88,17 +90,18 @@ def runEac(P, X, prefix, Y, ks=[2]):
         pca.plotpca(title=title, words=X, y_pred=y_pred, classnames=set(y_pred), text='Indice Rand Ajustado: {0} NMI: {1}'.format(ind_rand, ind_nmi))    
         pca.savefig("{0}/{1}_pca.png".format(name, title))
         save("{0}/{1}.json".format(name, title), y_pred.tolist()) 
+        saveclu("{0}/{1}/pvis/partitions/{3}/{2}.clu".format(name, prefix, titleParams, alg), y_pred)
 
-def runPVis(prefix):
+def runPVis(prefix, alg):
     baseref = "EvidenceAccumulationClustering\\{0}\\pvis\\".format(prefix)
-    basepartitions = "EvidenceAccumulationClustering\\{0}\\pvis\\partitions\\".format(prefix)
+    basepartitions = "EvidenceAccumulationClustering\\{0}\\pvis\\partitions\\{1}\\".format(prefix, alg)
     filenameRefs = glob.glob("{0}*.clu".format(baseref))
     filenamesPartitions = glob.glob("{0}*.clu".format(basepartitions))
     pvis = PVis()
     ordModes =  range(1,5)
     for filenameRef in filenameRefs:        
         for ordmode in ordModes:
-            filenameOut = filenameRef +'-pvis'+'-ordmode'+ str(ordmode) + '.pdf'
+            filenameOut = filenameRef +'-pvis'+str(alg)+'-ordmode'+ str(ordmode) + '.pdf'
             pvis.post(ordmode=ordmode, nrgrp=2, filenameRef=filenameRef, filenamesPartitions=filenamesPartitions, filenameOut=filenameOut)
 
 def runKMeans(X, prefix):
@@ -120,7 +123,8 @@ def runKMeans(X, prefix):
         pca.plotpca(title=titleFig, words=X, y_pred=p, classnames=set(p))    
         pca.savefig("{0}/{1}_pca.png".format(folder, model.title))
         save("{0}/{1}.json".format(folder, model.title), p.tolist())
-        saveclu("{0}/{1}/pvis/partitions/{2}.clu".format(folder, prefix, titleParams), p)
+        saveclu("{0}/{1}/pvis/partitions/{3}/{2}.clu".format(folder, prefix, titleParams, model.name), p)
+
     return P
 
 def loadP(prefix):
@@ -132,6 +136,7 @@ def loadP(prefix):
     return P
 
 def menu():
+    loadIris()
     print('Escolha uma das opções: ')
     print('1 - Executar 30 K-Means com K=[2,20] Dados da base IRIS')
     print('2 - Executar 30 K-Means com K=[2,20] Dados da base de Tweets')
@@ -199,9 +204,11 @@ def main():
             P = runKMeans(X, title)
             runEac(P, X , title, Y, [2,3,4,5,6,7,8,9])
         elif option == 6:
-            runPVis('iris')
+            runPVis('iris', "KMeans")
+            runPVis('iris', "single")
         elif option == 7:
-            runPVis('tweets')
+            runPVis('tweets', "KMeans")
+            runPVis('tweets', "single")
         option =  menu()
     print("Finished")
 

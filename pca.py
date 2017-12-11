@@ -13,6 +13,7 @@ from textdict import TextDict
 import numpy as np
 import re
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.patches as mpatches
 import colorsys
 from util import mkdir
@@ -25,7 +26,7 @@ class PlotPCA:
                 self.bagofwords = json.load(json_data)
         else:
             self.bagofwords = data
-        self.pca = PCA(n_components=2, svd_solver='full')
+        self.pca = PCA(n_components=3, svd_solver='full')
         self.pca.fit(self.bagofwords)
 
     def gencolors(self, n):
@@ -38,11 +39,43 @@ class PlotPCA:
         XPCA = self.pca.transform(words)
         basec = self.gencolors(len(classnames))
         colors = [basec[ (c % len(basec)) ] for c in y_pred]
+
         plt.scatter(XPCA[:, 0], XPCA[:, 1], s=30, color=colors)
+
+        #ind = [83, 70, 72, 68]
+        #ind = [110, 147, 111, 134, 106, 114, 146, 126, 119, 127, 128, 13, 101, 104, 105, 107, 123, 124]
+        #plt.scatter(XPCA[ind, 0], XPCA[ind, 1], s=30, c='black', marker='X')
+
         if len(classnames) <= 6:
             patches = [mpatches.Patch(color=basec[ (i % len(basec)) ], label=classn) for i,classn in enumerate(classnames)]
             plt.legend(handles=patches)
             plt.legend()
+
+
+    def plotpca3D(self, title, words, y_pred, classnames, text=None):
+        fig = plt.figure(num=title)
+        plt.title(title)
+        plt.figtext(0.1, 0.01, text)
+        XPCA = self.pca.transform(words)
+        basec = self.gencolors(len(classnames))
+        colors = [basec[ (c % len(basec)) ] for c in y_pred]
+
+        ax = fig.add_subplot(111, projection='3d')
+
+
+        ax.scatter(XPCA[:, 0], XPCA[:, 1], XPCA[:, 2], s=30, color=colors)
+
+        #ind = [83, 70, 72, 68]
+        ind = [110, 147, 111, 134, 106, 114, 146, 126, 119, 127, 128, 13, 101, 104, 105, 107, 123, 124]
+
+        ax.scatter(XPCA[ind, 0], XPCA[ind, 1], XPCA[ind, 2], s=30, c='black', marker='X')
+        
+        if len(classnames) <= 6:
+            patches = [mpatches.Patch(color=basec[ (i % len(basec)) ], label=classn) for i,classn in enumerate(classnames)]
+            plt.legend(handles=patches)
+            plt.legend()
+
+        plt.show()
 
     def show(self):
         plt.show()
