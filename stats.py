@@ -201,6 +201,7 @@ class Stat:
     adjusted_rand_score_theme = None
     adjusted_rand_score_themeclasse = None
     silhouette_score_ = None
+    normalized_mutual_info_score = None
     index_intracluster_variance_ = None
     index_connectivity_ = None
     theme = None
@@ -227,6 +228,7 @@ class Stat:
         self.adjusted_rand_score_themeclasse = metrics.adjusted_rand_score(self.themeclasse, labels)
         self.index_connectivity_10 = self.index_connectivity(labels, 10)
         self.index_connectivity_28 = self.index_connectivity(labels, 28)
+        self.normalized_mutual_info_score = metrics.normalized_mutual_info_score(self.theme, labels)
         try:
             self.silhouette_score_ = metrics.silhouette_score(self.data, labels)
         except:
@@ -281,6 +283,7 @@ class Stat:
         strstats += '"Indice Rand ajustado com relacao ao Tema";"{0}"\n'.format(self.adjusted_rand_score_theme)
         strstats += '"Indice Rand ajustado com relacao ao Tema+Classe";"{0}"\n'.format(self.adjusted_rand_score_themeclasse)
         strstats += '"Indice Silhueta com relacao a base inicial";"{0}"\n'.format(self.silhouette_score_)
+        strstats += '"Indice NMI";"{0}"\n'.format(self.normalized_mutual_info_score)
         strstats += '"Indice Variancia Intra-cluster";"{0}"\n'.format(self.index_intracluster_variance_)
         strstats += '"Indice Conectividade 10 vizinhos";"{0}"\n'.format(self.index_connectivity_10)
         strstats += '"Indice Conectividade 28 vizinhos";"{0}"\n'.format(self.index_connectivity_28)
@@ -300,6 +303,7 @@ class Stat:
         strstats += 'Indice Rand ajustado com relacao ao Tema: {0}\n'.format(self.adjusted_rand_score_theme)
         strstats += 'Indice Rand ajustado com relacao ao Tema+Classe: {0}\n'.format(self.adjusted_rand_score_themeclasse)
         strstats += "Indice Silhueta com relacao a base inicial: {0}\n".format(self.silhouette_score_)
+        strstats += '"Indice NMI";"{0}"\n'.format(self.normalized_mutual_info_score)
         strstats += "Indice Variancia Intra-cluster: {0}\n".format(self.index_intracluster_variance_)
         strstats += "Indice Conectividade 10 vizinhos: {0}\n".format(self.index_connectivity_10)
         strstats += "Indice Conectividade 28 vizinhos: {0}\n".format(self.index_connectivity_28)

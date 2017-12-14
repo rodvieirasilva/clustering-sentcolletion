@@ -51,6 +51,36 @@ class PlotPCA:
             plt.legend(handles=patches)
             plt.legend()
 
+    def plotpcaColors(self, title, words, y_pred, classnames, text=None):
+        plt.figure(num=title)
+        plt.title(title)
+        plt.figtext(0.1, 0.01, text)
+        XPCA = self.pca.transform(words)
+        basec = self.gencolors(len(classnames))
+        colors = [basec[ (c % len(basec)) ] for c in y_pred]
+
+        colors_labels = ['g', 'r', 'b']
+        for i,x in enumerate(colors_labels):
+            for j,k in enumerate(y_pred):
+                if k == i:
+                    colors[j] = x
+
+        plt.scatter(XPCA[:, 0], XPCA[:, 1], s=30, color=colors)
+
+        #ind = [83, 70, 72, 68]
+        #ind = [106]
+        #ind = [110, 147, 111, 134, 106, 114, 149, 101, 113, 121, 142, 127, 138, 123, 126, 146, 119, 133]
+        
+        ind = [16, 18, 32, 5, 14, 15, 33, 35, 22, 1, 12, 25, 29, 30, 34, 37, 45, 6, 9, 2, 3, 47, 13, 38, 41, 42, 8]
+        
+        plt.scatter(XPCA[ind, 0], XPCA[ind, 1], s=30, c='black', marker='X')
+
+        if len(classnames) <= 6:
+            patches = [mpatches.Patch(color=colors_labels[i], label=classn) for i,classn in enumerate(classnames)]
+            plt.legend(handles=patches)
+            plt.legend()
+
+        plt.show()
 
     def plotpca3D(self, title, words, y_pred, classnames, text=None):
         fig = plt.figure(num=title)
@@ -58,7 +88,15 @@ class PlotPCA:
         plt.figtext(0.1, 0.01, text)
         XPCA = self.pca.transform(words)
         basec = self.gencolors(len(classnames))
+        
         colors = [basec[ (c % len(basec)) ] for c in y_pred]
+
+        colors_labels = ['g', 'r', 'b']
+        for i,x in enumerate(colors_labels):
+            for j,k in enumerate(y_pred):
+                        
+                if k == i:
+                    colors[j] = x
 
         ax = fig.add_subplot(111, projection='3d')
 
@@ -66,7 +104,8 @@ class PlotPCA:
         ax.scatter(XPCA[:, 0], XPCA[:, 1], XPCA[:, 2], s=30, color=colors)
 
         #ind = [83, 70, 72, 68]
-        ind = [110, 147, 111, 134, 106, 114, 146, 126, 119, 127, 128, 13, 101, 104, 105, 107, 123, 124]
+        #ind = [106]
+        #ind = [110, 147, 111, 134, 106, 114, 149, 101, 113, 121, 142, 127, 138, 123, 126, 146, 119, 133]
 
         ax.scatter(XPCA[ind, 0], XPCA[ind, 1], XPCA[ind, 2], s=30, c='black', marker='X')
         

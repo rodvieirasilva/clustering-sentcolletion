@@ -102,7 +102,7 @@ def runPVis(prefix, alg):
     for filenameRef in filenameRefs:        
         for ordmode in ordModes:
             filenameOut = filenameRef +'-pvis'+str(alg)+'-ordmode'+ str(ordmode) + '.pdf'
-            pvis.post(ordmode=ordmode, nrgrp=2, filenameRef=filenameRef, filenamesPartitions=filenamesPartitions, filenameOut=filenameOut)
+            pvis.post(ordmode=ordmode, nrgrp=0, filenameRef=filenameRef, filenamesPartitions=filenamesPartitions, filenameOut=filenameOut)
 
 def runKMeans(X, prefix):
     print('Executando 30 KMeans, k =[2,20] - {0}'.format(prefix))
@@ -136,7 +136,6 @@ def loadP(prefix):
     return P
 
 def menu():
-    loadIris()
     print('Escolha uma das opções: ')
     print('1 - Executar 30 K-Means com K=[2,20] Dados da base IRIS')
     print('2 - Executar 30 K-Means com K=[2,20] Dados da base de Tweets')
@@ -167,6 +166,7 @@ def loadIris():
     pca = PlotPCA(filename=None, data=X)
     title = "iris"
     titleFig = "PCA Dataset IRIS"
+    #pca.plotpcaColors(title=titleFig, words=X, y_pred=Y, classnames=iris.target_names) 
     pca.plotpca(title=titleFig, words=X, y_pred=Y, classnames=iris.target_names) 
     pca.savefig("EvidenceAccumulationClustering/{0}/{1}_pca.png".format(title, titleFig))
     save("EvidenceAccumulationClustering/{0}/{1}.json".format(title, title), Y.tolist())
@@ -174,6 +174,7 @@ def loadIris():
     return X, title, Y
 
 def main():    
+    
     option = menu()    
     while(option!=0):
         if option == 1:
